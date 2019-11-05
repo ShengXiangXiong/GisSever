@@ -35,12 +35,11 @@ namespace LTE.InternalInterference
             }
         }
 
-        public static bool DisplayAnalysis(SourceInfo sourceInfo)
+        public static bool DisplayAnalysis(SourceInfo sourceInfo,string layerName)
         {
             if (sourceInfo != null)
             {
-                string layerName = "小区" + sourceInfo.CI + "覆盖";
-
+                
                 OperateCoverGirdLayer operateGrid = new OperateCoverGirdLayer(layerName);
                 operateGrid.ClearLayer();
                 return operateGrid.constuctCellGrids(sourceInfo.SourceName, sourceInfo.eNodeB, sourceInfo.CI);
