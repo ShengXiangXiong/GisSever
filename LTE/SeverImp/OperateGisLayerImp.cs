@@ -228,7 +228,7 @@ namespace LTE.SeverImp
             return new Result(true,"网内干扰刷新成功");
         }
 
-        public Result refreshDTLayer()
+        public Result refreshDTLayer(string bts, int dis, double minx, double miny, double maxx, double maxy)
         {
             OperateDTLayer layer = new OperateDTLayer();
             layer.ClearLayer();
