@@ -66,6 +66,30 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ESRI.ArcGIS.AnalysisTools.dll" size="27648">
+      <assemblyIdentity name="ESRI.ArcGIS.AnalysisTools" version="10.2.0.0" publicKeyToken="8FC3CC631E44AD86" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>1/+LmGfn40j4XrGnWGUGn+HDD/w8m0scAnd875TuuCY=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ESRI.ArcGIS.Analyst3DTools.dll" size="122880">
+      <assemblyIdentity name="ESRI.ArcGIS.Analyst3DTools" version="10.2.0.0" publicKeyToken="8FC3CC631E44AD86" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>gKSaxzr+MRYgL12no6lHtF8OBKdAqHHShiuogUcwP9Y=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ESRI.ArcGIS.Animation.dll" size="86016">
       <assemblyIdentity name="ESRI.ArcGIS.Animation" version="10.2.0.0" publicKeyToken="8FC3CC631E44AD86" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -390,14 +414,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="722432">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="733184">
       <assemblyIdentity name="LTE" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>94A8KhMVAJqHQOqZFfLM+ztMss94CSJrqQNcUKpMdAQ=</dsig:DigestValue>
+        <dsig:DigestValue>u12h164UHQv/twlw7GEpVbikpzHEyFUOFk5oAt96yqU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -446,13 +470,13 @@
       <dsig:DigestValue>J9BVpPyD9RCuCJeWDwfvXPMW0DybBjOEZWhEB42JUyc=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="bin\Debug\DataServiceSqlMap.xml" size="28940" writeableType="applicationData">
+  <file name="bin\Debug\DataServiceSqlMap.xml" size="33575" writeableType="applicationData">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>86DEM4FKliO/seulAClSjeyqEgV8WKwWERl7BagM6j8=</dsig:DigestValue>
+      <dsig:DigestValue>9NmyTDD6v5qPuQoSGjAu8S61Ku1GP+XH6ZJog6qpoZM=</dsig:DigestValue>
     </hash>
   </file>
   <file name="bin\Debug\tbAccelerateGridTIN.xml" size="5624" writeableType="applicationData">

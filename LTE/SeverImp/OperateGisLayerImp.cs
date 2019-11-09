@@ -9,6 +9,14 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
+using ESRI.ArcGIS.DataSourcesFile;
+using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.Geometry;
+using System.Xml;
+using System.Diagnostics;
+using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace LTE.SeverImp
 {
@@ -16,6 +24,7 @@ namespace LTE.SeverImp
     {
         public Result cluster()
         {
+            
             DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetClusterPosition", null);  // Ibatis 数据访问,得到聚类图层文件位置
             string filepath = dt1.Rows[0][0].ToString();
             DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
@@ -53,16 +62,18 @@ namespace LTE.SeverImp
             {
                 return new Result(false, ex.ToString());
             }
+            
             DataTable dt3;
             try
             {
                 dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetClusterResult", null);
+           //     return new Result(true, "ok");
             }
             catch (Exception ex)
             {
                 return new Result(false, ex.ToString());
             }
-
+            
             int i;
             Dictionary<int, int> myDictionary = new Dictionary<int, int>();
             for (i = 0; i < dt3.Rows.Count; i++)
@@ -103,6 +114,7 @@ namespace LTE.SeverImp
                 { return new Result(false, ee.ToString()); }
             }
             return new Result(true, "成功");
+            
 
         }
 
@@ -272,7 +284,6 @@ namespace LTE.SeverImp
                         int gridID = Convert.ToInt32(pFeature.get_Value(fieldindex));
                         IArea parea = pFeature.Shape as IArea;
                         double area = parea.Area;
-                        area = Math.Round(area, 2);
                         if (myDictionary.ContainsKey(gridID) == false)
                         {
                             myDictionary.Add(gridID, area);
@@ -311,7 +322,7 @@ namespace LTE.SeverImp
                     dt.Columns.Add("area", Type.GetType("System.Double"));
                     foreach (var item in myDictionary.Keys)
                     {
-                        dt.Rows.Add(new object[] { (item % (ymax + 1)).ToString(), (item / (ymax + 1)).ToString(), Math.Round(myDictionary[item] / (cellsize * cellsize), 2).ToString() });
+                        dt.Rows.Add(new object[] { (item % (ymax + 1)).ToString(), (item / (ymax + 1)).ToString(), Math.Round(myDictionary[item] / (cellsize * cellsize), 4).ToString() });
                         if (dt.Rows.Count > 5000)
                         {
                             using (SqlBulkCopy bcp = new SqlBulkCopy(DataUtil.ConnectionString))
@@ -427,7 +438,6 @@ namespace LTE.SeverImp
                         int gridID = Convert.ToInt32(pFeature.get_Value(fieldindex));
                         IArea parea = pFeature.Shape as IArea;
                         double area = parea.Area;
-                        area = Math.Round(area, 2);
                         if (myDictionary.ContainsKey(gridID) == false)
                         {
                             myDictionary.Add(gridID, area);
@@ -468,7 +478,7 @@ namespace LTE.SeverImp
                     dt.Columns.Add("area", Type.GetType("System.Double"));
                     foreach (var item in myDictionary.Keys)
                     {
-                        dt.Rows.Add(new object[] { (item % (ymax + 1)).ToString(), (item / (ymax + 1)).ToString(), Math.Round(myDictionary[item] / (cellsize * cellsize), 2).ToString() });
+                        dt.Rows.Add(new object[] { (item % (ymax + 1)).ToString(), (item / (ymax + 1)).ToString(), Math.Round(myDictionary[item] / (cellsize * cellsize), 4).ToString() });
                         if (dt.Rows.Count > 5000)
                         {
                             using (SqlBulkCopy bcp = new SqlBulkCopy(DataUtil.ConnectionString))
@@ -585,7 +595,6 @@ namespace LTE.SeverImp
                         int gridID = Convert.ToInt32(pFeature.get_Value(fieldindex));
                         IArea parea = pFeature.Shape as IArea;
                         double area = parea.Area;
-                        area = Math.Round(area, 2);
                         if (myDictionary.ContainsKey(gridID) == false)
                         {
                             myDictionary.Add(gridID, area);
@@ -626,7 +635,7 @@ namespace LTE.SeverImp
                     dt.Columns.Add("area", Type.GetType("System.Double"));
                     foreach (var item in myDictionary.Keys)
                     {
-                        dt.Rows.Add(new object[] { (item % (ymax + 1)).ToString(), (item / (ymax + 1)).ToString(), Math.Round(myDictionary[item] / (cellsize * cellsize), 2).ToString() });
+                        dt.Rows.Add(new object[] { (item % (ymax + 1)).ToString(), (item / (ymax + 1)).ToString(), Math.Round(myDictionary[item] / (cellsize * cellsize), 4).ToString() });
                         if (dt.Rows.Count > 5000)
                         {
                             using (SqlBulkCopy bcp = new SqlBulkCopy(DataUtil.ConnectionString))
