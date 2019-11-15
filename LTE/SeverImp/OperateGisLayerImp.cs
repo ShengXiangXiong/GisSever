@@ -796,7 +796,7 @@ namespace LTE.SeverImp
             CellInfo cellInfo = new CellInfo();
             cellInfo.SourceName = cellName;
             Utils.validate.validateCell(ref cellInfo);
-            string layerName = "小区" + cellInfo.CI + "地面覆盖";
+            string layerName = "小区" + cellInfo.CI + "地面覆盖.shp";
             if (!AnalysisEntry.DisplayAnalysis(cellInfo,layerName))
             {
                 return new Result(false, "请先进行小区覆盖计算");

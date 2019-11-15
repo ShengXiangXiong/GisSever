@@ -100,13 +100,13 @@ namespace LTE.GIS
         public ILayer CreateCoverLayer()
         {
             //定义一个几何字段，类型为多边形类型
-            //ISpatialReferenceFactory2 originalSpatialReferenceFactory = new SpatialReferenceEnvironmentClass();
+            ISpatialReferenceFactory2 originalSpatialReferenceFactory = new SpatialReferenceEnvironmentClass();
             //ISpatialReference originalSpatialReference1 = originalSpatialReferenceFactory.CreateGeographicCoordinateSystem((int)esriSRGeoCSType.esriSRGeoCS_WGS1984);
-            //ISpatialReference originalSpatialReference = originalSpatialReferenceFactory.CreateProjectedCoordinateSystem((int)esriSRProjCSType.esriSRProjCS_WGS1984UTM_50N);
+            ISpatialReference originalSpatialReference = originalSpatialReferenceFactory.CreateProjectedCoordinateSystem((int)esriSRProjCSType.esriSRProjCS_WGS1984UTM_50N);
             IGeometryDefEdit pGeoDef = new GeometryDefClass();
             IGeometryDefEdit pGeoDefEdit = pGeoDef as IGeometryDefEdit;
             pGeoDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
-            //pGeoDefEdit.SpatialReference_2 = originalSpatialReference1;
+            pGeoDefEdit.SpatialReference_2 = originalSpatialReference;
             //定义一个字段集合对象
             IFields pFields = new FieldsClass();
             IFieldsEdit pFieldsEdit = (IFieldsEdit)pFields;
