@@ -13,6 +13,9 @@
 MapFiles/
 
 *.exe
+LTE.application
+LTE.exe.manifest
+LTE.exe.config
 
 # Build results
 [Dd]ebugPublic/
