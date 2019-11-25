@@ -124,6 +124,8 @@ namespace LTE.GIS
             addFiled("GXID", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("GYID", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("eNodeB", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("Longitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("Latitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("CI", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("CellName", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("RecePower", esriFieldType.esriFieldTypeDouble, ref pFieldsEdit);
@@ -156,6 +158,8 @@ namespace LTE.GIS
             addFiled("RecePower", esriFieldType.esriFieldTypeDouble, ref pFieldsEdit);
             addFiled("PathLoss", esriFieldType.esriFieldTypeDouble, ref pFieldsEdit);
             addFiled("Level", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("Longitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("Latitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             return GetLayer(workspaceDirectory, fileName, pFields);
         }
     }

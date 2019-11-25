@@ -15,6 +15,7 @@ using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Analyst3D;
 using LTE.DB;
+using LTE.InternalInterference.Grid;
 
 namespace LTE.GIS
 {
@@ -32,6 +33,8 @@ namespace LTE.GIS
         private int cellNameIndex;
         private int eNodeBIndex;
         private int CIIndex;
+        private int LongitudeIndex;
+        private int LatitudeIndex;
 
         // 列名
         public OperateCoverGirdLayer(string layerName)
@@ -61,6 +64,8 @@ namespace LTE.GIS
             this.cellNameIndex = pFeatureClass.FindField("CellName");
             this.eNodeBIndex = pFeatureClass.FindField("eNodeB");
             this.CIIndex = pFeatureClass.FindField("CI");
+            this.LongitudeIndex = pFeatureClass.FindField("Longitude");
+            this.LatitudeIndex = pFeatureClass.FindField("Latitude");
         }
 
 
@@ -166,6 +171,10 @@ namespace LTE.GIS
                 gxid = int.Parse(dataRow["Gxid"].ToString());
                 gyid = int.Parse(dataRow["Gyid"].ToString());
 
+                Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
+                double lon = p.X;
+                double lat = p.Y;
+
                 if (!(float.TryParse(dataRow["MinX"].ToString(), out x1) && float.TryParse(dataRow["MinY"].ToString(), out y1) && float.TryParse(dataRow["MaxX"].ToString(), out x2) && float.TryParse(dataRow["MaxY"].ToString(), out y2) && float.TryParse(dataRow["ReceivedPowerdbm"].ToString(), out recePower) && float.TryParse(dataRow["PathLoss"].ToString(), out pathLoss)))
                     continue;
 
@@ -183,6 +192,11 @@ namespace LTE.GIS
                 pFeatureBuffer.set_Value(this.eNodeBIndex, enodeb);
                 pFeatureBuffer.set_Value(this.CIIndex, ci);
                 pFeatureBuffer.set_Value(this.cellNameIndex, cellname);
+
+                pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
+                pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
+
+
                 if (recePower > -41)
                     pFeatureBuffer.set_Value(this.RecePowerIndex, -41);
                 //else if(recePower < -110)

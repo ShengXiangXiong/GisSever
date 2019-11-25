@@ -414,14 +414,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="733184">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="733696">
       <assemblyIdentity name="LTE" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>tFVJ/iJCxRlo7NooJv9HUpDDGv32skoYYo6GQTWlIxg=</dsig:DigestValue>
+        <dsig:DigestValue>QB0gbyObUt4dMG9sltm4IfuhUIoAY27LYL3/LhUgOec=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -807,11 +807,12 @@ namespace LTE.SeverImp
         public Result refreshGroundCoverLayer(int minXid, int minYid, int maxXid, int maxYid)
         {
             string areaRange = String.Format("{0}_{1}_{2}_{3}", minXid, minYid, maxXid, maxYid);
-            OperateCoverGirdLayer operateGrid = new OperateCoverGirdLayer(LayerNames.AreaCoverGrids + areaRange);
+            string layerName = areaRange + LayerNames.AreaCoverGrids;
+            OperateCoverGirdLayer operateGrid = new OperateCoverGirdLayer(layerName);
             operateGrid.ClearLayer();
             if (!operateGrid.constuctAreaGrids(minXid, minYid, maxXid, maxYid))
                 return new Result(false, "请先对区域内的小区进行覆盖计算");
-            return new Result(true,"区域覆盖刷新成功");
+            return new Result { Ok = true, Msg = "刷新成功", ShpName = layerName };
         }
 
         public Result refreshInfLayer()
