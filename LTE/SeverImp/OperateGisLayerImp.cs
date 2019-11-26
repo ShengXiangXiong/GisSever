@@ -695,23 +695,23 @@ namespace LTE.SeverImp
             CellInfo cellInfo = new CellInfo();
             cellInfo.SourceName = cellName;
             Utils.validate.validateCell(ref cellInfo);
-
+            string layerName = "小区" + cellInfo.SourceName + "立体覆盖.shp";
             if (!AnalysisEntry.Display3DAnalysis(cellInfo))
             {
                 return new Result(false, "请先进行小区覆盖计算");
             }
-
-            return new Result(true, "立体覆盖刷新成功");
+            return new Result { Ok = true, Msg = "刷新成功", ShpName = layerName };
         }
 
         public Result refresh3DCoverLayer(int minXid, int minYid, int maxXid, int maxYid)
         {
             string areaRange = String.Format("{0}_{1}_{2}_{3}", minXid, minYid, maxXid, maxYid);
-            OperateCoverGird3DLayer operateGrid = new OperateCoverGird3DLayer(LayerNames.AreaCoverGrid3Ds+areaRange);
+            string layerName = LayerNames.AreaCoverGrid3Ds + areaRange+".shp";
+            OperateCoverGird3DLayer operateGrid = new OperateCoverGird3DLayer(layerName);
             operateGrid.ClearLayer();
             if (!operateGrid.constuctAreaGrid3Ds(minXid, minYid, maxXid, maxYid))
                 return new Result(false, "请先对区域内的小区进行覆盖计算");
-            return new Result(true, "区域立体覆盖刷新成功");
+            return new Result { Ok = true, Msg = "刷新成功", ShpName = layerName };
         }
 
         public Result refreshBuildingLayer()
@@ -742,15 +742,15 @@ namespace LTE.SeverImp
         public Result RefreshCell()
         {
             LTE.GIS.OperateCellLayer cellLayer = new LTE.GIS.OperateCellLayer();
-            if (!cellLayer.RefreshCellLayer())
+            string layerName = "基站图层.shp";
+            if (!cellLayer.RefreshCellLayer(layerName))
                 return new Result(false, "小区数据为空");
-            return new Result(true, "小区图层刷新成功");
+            return new Result { Ok = true, Msg = "刷新成功", ShpName = layerName };
         }
 
         public Result refreshDefectLayer(int minXid, int minYid, int maxXid, int maxYid, DefectType type)
         {
-            string areaRange = String.Format("{0}_{1}_{2}_{3}", minXid, minYid, maxXid, maxYid);
-            string layerName = "";
+            string layerName = String.Format("{0}_{1}_{2}_{3}", minXid, minYid, maxXid, maxYid);
             switch (type)
             {
                 case DefectType.Weak:
@@ -774,11 +774,12 @@ namespace LTE.SeverImp
                 default:
                     break;
             }
-            OperateDefectLayer operateGrid3d = new OperateDefectLayer(layerName+areaRange);
+            layerName += ".shp";
+            OperateDefectLayer operateGrid3d = new OperateDefectLayer(layerName);
             operateGrid3d.ClearLayer();
             if (!operateGrid3d.constuctGrid3Ds(minXid, minYid, maxXid, maxYid, (short)type))
                 return new Result(false, "数据为空");
-            return new Result(true,"网内干扰刷新成功");
+            return new Result { Ok = true, Msg = "刷新成功", ShpName = layerName };
         }
 
         public Result refreshDTLayer(string bts, int dis, double minx, double miny, double maxx, double maxy)
@@ -808,6 +809,7 @@ namespace LTE.SeverImp
         {
             string areaRange = String.Format("{0}_{1}_{2}_{3}", minXid, minYid, maxXid, maxYid);
             string layerName = areaRange + LayerNames.AreaCoverGrids;
+            layerName += ".shp";
             OperateCoverGirdLayer operateGrid = new OperateCoverGirdLayer(layerName);
             operateGrid.ClearLayer();
             if (!operateGrid.constuctAreaGrids(minXid, minYid, maxXid, maxYid))

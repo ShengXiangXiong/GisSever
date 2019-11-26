@@ -51,7 +51,7 @@ namespace LTE.InternalInterference
         {
             if (sourceInfo != null)
             {
-                string layerName = "小区" + sourceInfo.SourceName + "立体覆盖";
+                string layerName = "小区" + sourceInfo.SourceName + "立体覆盖.shp";
                 OperateCoverGird3DLayer operateGrid = new OperateCoverGird3DLayer(layerName);
                 operateGrid.ClearLayer();
                 return operateGrid.constuctCellGrid3Ds(sourceInfo.SourceName, sourceInfo.eNodeB, sourceInfo.CI);

@@ -280,6 +280,11 @@ namespace LTE.GIS
             {
                 gxid = int.Parse(dataRow["GXID"].ToString());
                 gyid = int.Parse(dataRow["GYID"].ToString());
+
+                Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
+                double lon = p.X;
+                double lat = p.Y;
+
                 //lac = int.Parse(dataRow["eNodeB"].ToString());
                 //ci = int.Parse(dataRow["CI"].ToString());
                 recePower = float.Parse(dataRow["ReceivedPowerdbm"].ToString());
@@ -306,6 +311,8 @@ namespace LTE.GIS
                 pFeatureBuffer.set_Value(this.eNodeBIndex, 0);
                 pFeatureBuffer.set_Value(this.CIIndex, 0);
                 pFeatureBuffer.set_Value(this.cellNameIndex, "");
+                pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
+                pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
                 if (recePower > -41)
                     pFeatureBuffer.set_Value(this.RecePowerIndex, -41);
                 //else if(recePower < -110)

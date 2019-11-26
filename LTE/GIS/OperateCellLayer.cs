@@ -31,8 +31,17 @@ namespace LTE.GIS
         /// <summary>
         /// 刷新GSM图层(包含900,1800及基站图层)
         /// </summary>
-        public bool RefreshCellLayer()
+        public bool RefreshCellLayer(string layerName)
         {
+            IFeatureWorkspace featureWorkspace = MapWorkSpace.getWorkSpace();
+
+            string path = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString();
+            //若不存在shp文件，则创建
+            if (!DefineLayer.findLayer(path, layerName))
+            {
+                //new CreateLayer(path, layerName).Test();
+                new CreateLayer(path, layerName).CreateCellLayer();
+            }
             //RefreshGSM900BTS();
             return RefreshGSM900Cell();
             //RefreshGSM1800BTS();

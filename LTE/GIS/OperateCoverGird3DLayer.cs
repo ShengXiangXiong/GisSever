@@ -34,6 +34,8 @@ namespace LTE.GIS
         private int cellNameIndex;
         private int eNodeBIndex;
         private int CIIndex;
+        private int LongitudeIndex;
+        private int LatitudeIndex;
 
         public OperateCoverGird3DLayer(string layerName)
         {
@@ -58,6 +60,8 @@ namespace LTE.GIS
             this.cellNameIndex = pFeatureClass.FindField("CellName");
             this.eNodeBIndex = pFeatureClass.FindField("eNodeB");
             this.CIIndex = pFeatureClass.FindField("CI");
+            this.LongitudeIndex = pFeatureClass.FindField("Longitude");
+            this.LatitudeIndex = pFeatureClass.FindField("Latitude");
         }
 
 
@@ -98,6 +102,10 @@ namespace LTE.GIS
             IFeatureCursor pFeatureCursor = pFeatureClass.Insert(true);
             IFeatureBuffer pFeatureBuffer;
 
+            Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
+            double lon = p.X;
+            double lat = p.Y;
+
             IPoint pointA = GeometryUtilities.ConstructPoint3D(x1, y1, z);
             IPoint pointB = GeometryUtilities.ConstructPoint3D(x2, y1, z);
             IPoint pointC = GeometryUtilities.ConstructPoint3D(x2, y2, z);
@@ -115,6 +123,9 @@ namespace LTE.GIS
             pFeatureBuffer.set_Value(this.cellNameIndex, cellName);
             pFeatureBuffer.set_Value(this.RecePowerIndex, recePower);
             pFeatureBuffer.set_Value(this.PathLossIndex, pathLoss);
+            pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
+            pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
+
             pFeatureCursor.InsertFeature(pFeatureBuffer);
 
             //一次性提交
@@ -171,6 +182,10 @@ namespace LTE.GIS
                 gyid = int.Parse(dataRow["Gyid"].ToString());
                 level = int.Parse(dataRow["level"].ToString());
 
+                Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
+                double lon = p.X;
+                double lat = p.Y;
+
                 //if (!(double.TryParse(dataRow["CX"].ToString(), out x1) && double.TryParse(dataRow["CY"].ToString(), out y1)))
                 //    continue;
                 if (!(double.TryParse(dataRow["MinX"].ToString(), out x1) && double.TryParse(dataRow["MinY"].ToString(), out y1)))
@@ -204,6 +219,8 @@ namespace LTE.GIS
                 pFeatureBuffer.set_Value(this.CIIndex, ci);
                 pFeatureBuffer.set_Value(this.cellNameIndex, cellname);
                 //if(recePower > 
+                pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
+                pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
 
                 if (recePower > -41)
                     pFeatureBuffer.set_Value(this.RecePowerIndex, -41);
@@ -266,7 +283,9 @@ namespace LTE.GIS
                 gxid = int.Parse(dataRow["Gxid"].ToString());
                 gyid = int.Parse(dataRow["Gyid"].ToString());
                 level = int.Parse(dataRow["level"].ToString());
-
+                Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
+                double lon = p.X;
+                double lat = p.Y;
                 if (!(double.TryParse(dataRow["MinX"].ToString(), out x1) && double.TryParse(dataRow["MinY"].ToString(), out y1) && double.TryParse(dataRow["MaxX"].ToString(), out x2) && double.TryParse(dataRow["MaxY"].ToString(), out y2) && double.TryParse(dataRow["ReceivedPowerdbm"].ToString(), out recePower) && double.TryParse(dataRow["PathLoss"].ToString(), out pathLoss)))
                     continue;
                 z = gheight * (level - 1) + gbaseheight;
@@ -288,6 +307,8 @@ namespace LTE.GIS
                 pFeatureBuffer.set_Value(this.eNodeBIndex, eNodeB);
                 pFeatureBuffer.set_Value(this.CIIndex, ci);
                 pFeatureBuffer.set_Value(this.cellNameIndex, cellname);
+                pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
+                pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
                 if (recePower > -41)
                     pFeatureBuffer.set_Value(this.RecePowerIndex, -41);
                 //else if (recePower < -110)
@@ -363,6 +384,9 @@ namespace LTE.GIS
                 gxid = int.Parse(dataRow["GXID"].ToString());
                 gyid = int.Parse(dataRow["GYID"].ToString());
                 level = int.Parse(dataRow["Level"].ToString());
+                Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
+                double lon = p.X;
+                double lat = p.Y;
                 //lac = int.Parse(dataRow["eNodeB"].ToString());
                 //ci = int.Parse(dataRow["CI"].ToString());
                 recePower = double.Parse(dataRow["ReceivedPowerdbm"].ToString());
@@ -392,6 +416,8 @@ namespace LTE.GIS
                 pFeatureBuffer.set_Value(this.eNodeBIndex, 0);
                 pFeatureBuffer.set_Value(this.CIIndex, 0);
                 pFeatureBuffer.set_Value(this.cellNameIndex, "");
+                pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
+                pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
                 if (recePower > -41)
                     pFeatureBuffer.set_Value(this.RecePowerIndex, -41);
                 //else if(recePower < -100)

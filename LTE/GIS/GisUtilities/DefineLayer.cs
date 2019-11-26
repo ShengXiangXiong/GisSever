@@ -37,7 +37,7 @@ namespace LTE.GIS
         {
             if (Directory.Exists(workSpaceDir))
             {
-                string filename = workSpaceDir + "\\" + layerName+".shp";
+                string filename = workSpaceDir + "\\" + layerName;
                 if (File.Exists(filename))
                 {
                     return true;

@@ -142,13 +142,21 @@ namespace LTE.GIS
             IGeometryDefEdit pGeoDefEdit = pGeoDef as IGeometryDefEdit;
             pGeoDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
             pGeoDefEdit.SpatialReference_2 = originalSpatialReference;
-            
+
             //定义一个字段集合对象
             IFields pFields = new FieldsClass();
             IFieldsEdit pFieldsEdit = (IFieldsEdit)pFields;
 
+
+            //单独处理shape字段
+            IField pField = new FieldClass();
+            IFieldEdit pFieldEdit = (IFieldEdit)pField;
+            pFieldEdit.Name_2 = "Shape";
+            pFieldEdit.Type_2 = esriFieldType.esriFieldTypeGeometry;
+            pFieldsEdit.AddField(pField);
+            pFieldEdit.GeometryDef_2 = pGeoDef;
+
             //添加字段
-            addFiled("Shape", esriFieldType.esriFieldTypeGeometry, ref pFieldsEdit);
             addFiled("Id", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("GXID", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("GYID", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
@@ -160,6 +168,44 @@ namespace LTE.GIS
             addFiled("Level", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("Longitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             addFiled("Latitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            return GetLayer(workspaceDirectory, fileName, pFields);
+        }
+        public ILayer CreateCellLayer()
+        {
+
+            //定义一个几何字段，类型为多边形类型
+            ISpatialReferenceFactory2 originalSpatialReferenceFactory = new SpatialReferenceEnvironmentClass();
+            ISpatialReference originalSpatialReference = originalSpatialReferenceFactory.CreateProjectedCoordinateSystem((int)esriSRProjCSType.esriSRProjCS_WGS1984UTM_50N);
+            IGeometryDefEdit pGeoDef = new GeometryDefClass();
+            IGeometryDefEdit pGeoDefEdit = pGeoDef as IGeometryDefEdit;
+            pGeoDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
+            pGeoDefEdit.SpatialReference_2 = originalSpatialReference;
+
+            //定义一个字段集合对象
+            IFields pFields = new FieldsClass();
+            IFieldsEdit pFieldsEdit = (IFieldsEdit)pFields;
+
+            //单独处理shape字段
+            IField pField = new FieldClass();
+            IFieldEdit pFieldEdit = (IFieldEdit)pField;
+            pFieldEdit.Name_2 = "Shape";
+            pFieldEdit.Type_2 = esriFieldType.esriFieldTypeGeometry;
+            pFieldsEdit.AddField(pField);
+            pFieldEdit.GeometryDef_2 = pGeoDef;
+
+            //添加字段
+            addFiled("eNodeB", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("CI", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("CellName", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("Longitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("Latitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("AntHeight", esriFieldType.esriFieldTypeDouble, ref pFieldsEdit);
+            addFiled("Azimuth", esriFieldType.esriFieldTypeInteger, ref pFieldsEdit);
+            addFiled("EARFCN", esriFieldType.esriFieldTypeInteger, ref pFieldsEdit);
+            addFiled("EIRP", esriFieldType.esriFieldTypeDouble, ref pFieldsEdit);
+            addFiled("Tilt", esriFieldType.esriFieldTypeDouble, ref pFieldsEdit);
+            addFiled("Radius", esriFieldType.esriFieldTypeDouble, ref pFieldsEdit);
+
             return GetLayer(workspaceDirectory, fileName, pFields);
         }
     }
