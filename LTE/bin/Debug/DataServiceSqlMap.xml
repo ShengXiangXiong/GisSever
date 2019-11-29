@@ -720,7 +720,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
 
     <!--获取渔网覆盖范围和栅格大小-->
     <select id="GetFishnetRange">
-                select AreaMinX,AreaMinY,AreaMaxX,AreaMaxY,AGridSize from tbGridRange where id=1
+                 select AreaMinX,AreaMinY,AreaMaxX,AreaMaxY,AGridSize,AreaMinLong,AreaMinLat,AreaMaxLong,AreaMaxLat 
+                 from tbGridRange where id=1
     </select>
 
     <!--获取建筑物图层文件位置-->
@@ -843,10 +844,167 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
     </select>
 
     <!--获取聚类结果-->
-    <select id="GetClusterResult">
+    <select id="GetClusterResult" parameterClass="HashTable">
                 select GXID,GYID,Scene from tbAccelerateGridScene1
-                where GZID=1
+                where GYID between '$minGYID$'  and '$maxGYID$'  and GZID=1
     </select>
+
+<!--更新前提条件表的网格划分功能状态-->
+    <update id="UpdatetbDependTableGridRange">
+                  update tbDependTable set State=1
+                  where item='GridRange'
+    </update>
+
+    <!--网格划分功能状态查询-->
+    <select id="GetGridRangeState">
+                select State from tbDependTable
+                where item='GridRange'
+    </select>
+
+    <!--更新前提条件表的渔网生成功能状态-->
+    <update id="UpdatetbDependTableFishnetShp">
+                  update tbDependTable set State=1
+                  where item='FishnetShp'
+    </update>
+
+    <!--渔网生成功能状态查询-->
+    <select id="GetFishnetShpState">
+                select State from tbDependTable
+                where item='FishnetShp'
+    </select>
+
+    <!--更新前提条件表的建筑物叠加分析功能状态-->
+    <update id="UpdatetbDependTableBuilding_overlay">
+                  update tbDependTable set State=1
+                  where item='Building_overlaytoDB'
+    </update>
+
+    <!--更新前提条件表的水面叠加分析功能状态-->
+    <update id="UpdatetbDependTableWater_overlay">
+                  update tbDependTable set State=1
+                  where item='Water_overlaytoDB'
+    </update>
+
+    <!--更新前提条件表的草地叠加分析功能状态-->
+    <update id="UpdatetbDependTableGrass_overlay">
+                  update tbDependTable set State=1
+                  where item='Grass_overlaytoDB'
+    </update>
+
+    <!--建筑物叠加分析功能状态查询-->
+    <select id="GetBuilding_overlayState">
+                select State from tbDependTable
+                where item='Building_overlaytoDB'
+    </select>
+
+    <!--水面叠加分析功能状态查询-->
+    <select id="GetWater_overlayState">
+                select State from tbDependTable
+                where item='Water_overlaytoDB'
+    </select>
+
+    <!--草地叠加分析功能状态查询-->
+    <select id="GetGrass_overlayState">
+                select State from tbDependTable
+                where item='Grass_overlaytoDB'
+    </select>
+   
+    <!--更新前提条件表的聚类分析功能状态-->
+    <update id="UpdatetbDependTableClustertoDB">
+                  update tbDependTable set State=1
+                  where item='ClustertoDB'
+    </update>
+
+    <!--聚类分析功能状态查询-->
+    <select id="GetClustertoDBState">
+                select State from tbDependTable
+                where item='ClustertoDB'
+    </select>
+
+    <!--更新前提条件表的聚类图层生成功能状态-->
+    <update id="UpdatetbDependTableClusterShp">
+                  update tbDependTable set State=1
+                  where item='ClusterShp'
+    </update>  
+
+    <!--删除网格划分后前提条件表的更新-->
+    <update id="UpdatetbDependTableDuetoGridRange">
+                  update tbDependTable SET State=0 
+                  where item in ('GridRange','FishnetShp','Building_overlaytoDB','Water_overlaytoDB','Grass_overlaytoDB','ClustertoDB','ClusterShp')
+    </update>
+
+    <!--删除渔网图层附带的所有数据-->
+    <delete id="DeleteFishnet">
+	 delete from tbAccelerateGridScene1
+    </delete>
+
+    <!--删除渔网后前提条件表的更新-->
+    <update id="UpdatetbDependTableDuetoFishnet">
+                  update tbDependTable SET State=0 
+                  where item in ('FishnetShp','Building_overlaytoDB','Water_overlaytoDB','Grass_overlaytoDB','ClustertoDB','ClusterShp')
+    </update>
+
+    <!--删除建筑物叠加图层后前提条件表的更新-->
+    <update id="UpdatetbDependTableDuetoBuilding_overlay">
+                  update tbDependTable SET State=0 
+                  where item in ('Building_overlaytoDB','ClustertoDB','ClusterShp')
+    </update>
+
+    <!--删除建筑物叠加图层后加速场景表的更新-->
+    <update id="UpdatetbAccelerateGridSceneDuetoBuilding_overlay">
+                  update tbAccelerateGridScene1 set Scene=null,ClusterID=null,BuildingRatio=null
+    </update>
+
+    <!--删除水面叠加图层后前提条件表的更新-->
+    <update id="UpdatetbDependTableDuetoWater_overlay">
+                  update tbDependTable SET State=0 
+                  where item in ('Water_overlaytoDB','ClustertoDB','ClusterShp')
+    </update>
+
+    <!--删除水面叠加图层后加速场景表的更新-->
+    <update id="UpdatetbAccelerateGridSceneDuetoWater_overlay">
+                  update tbAccelerateGridScene1 set Scene=null,ClusterID=null,WaterRatio=null
+    </update>
+
+    <!--删除草地叠加图层后前提条件表的更新-->
+    <update id="UpdatetbDependTableDuetoGrass_overlay">
+                  update tbDependTable SET State=0 
+                  where item in ('Grass_overlaytoDB','ClustertoDB','ClusterShp')
+    </update>
+
+    <!--删除草地叠加图层后加速场景表的更新-->
+    <update id="UpdatetbAccelerateGridSceneDuetoGrass_overlay">
+                  update tbAccelerateGridScene1 set Scene=null,ClusterID=null,GrassRatio=null
+    </update>
+
+    <!--删除聚类图层后前提条件表的更新-->
+    <update id="UpdatetbDependTableDuetoCluster">
+                  update tbDependTable SET State=0 
+                  where item ='ClusterShp'
+    </update>
+
+    <!--删除聚类图层后加速场景表的更新-->
+    <update id="UpdatetbAccelerateGridSceneDuetoCluster">
+                  update tbAccelerateGridScene1 set Scene=null,ClusterID=null
+    </update> 
+
+    <!--获取聚类结果簇序号-->
+    <select id="GetClusterResultNumber" parameterClass="HashTable">
+                select GXID,GYID,ClusterID from tbAccelerateGridScene1
+                where GYID between '$minGYID$'  and '$maxGYID$'  and GZID=1
+    </select> 
+
+    <!--获取栅格经度-->
+    <select id="GetGridLongitude" parameterClass="HashTable">
+                select GXID,GYID,CenterLongitude from tbAccelerateGridScene1
+                where GYID between '$minGYID$'  and '$maxGYID$'  and GZID=1
+    </select>   
+
+    <!--获取栅格纬度-->
+    <select id="GetGridLatitude" parameterClass="HashTable">
+                select GXID,GYID,CenterLatitude from tbAccelerateGridScene1
+                where GYID between '$minGYID$'  and '$maxGYID$'  and GZID=1
+    </select> 
 
   </statements>
 </sqlMap>
