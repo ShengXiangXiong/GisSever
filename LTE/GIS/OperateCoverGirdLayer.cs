@@ -16,6 +16,7 @@ using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Analyst3D;
 using LTE.DB;
 using LTE.InternalInterference.Grid;
+using LTE.Model;
 
 namespace LTE.GIS
 {
@@ -162,10 +163,17 @@ namespace LTE.GIS
             float recePower, pathLoss;
             //循环添加
             int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = gridTable.Rows.Count;
+            loadInfo.loadCreate();
+
             foreach (DataRow dataRow in gridTable.Rows)
             {
                 if (cnt++ % 1000 == 0)
                 {
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
                     Console.WriteLine("已计算  "+cnt+"/"+ gridTable.Rows.Count);
                 }
                 gxid = int.Parse(dataRow["Gxid"].ToString());
@@ -221,6 +229,10 @@ namespace LTE.GIS
             IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
             pFeatureClassManage.UpdateExtent();
 
+            //更新完成进度信息
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
+            loadInfo.loadFinish();
             //GISMapApplication.Instance.RefreshLayer(pFeatureLayer);
             return true;
         }

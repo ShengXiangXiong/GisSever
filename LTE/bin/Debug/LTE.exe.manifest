@@ -414,14 +414,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="738816">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="745472">
       <assemblyIdentity name="LTE" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>NPWP6SApIvMOKWGW3aiwQ9tZajrCRP9X4ONY7YGFuzY=</dsig:DigestValue>
+        <dsig:DigestValue>TtJ8ruja7Y7vOMRB2XUmUVFAeoWqljy+rjCsl2W8DbU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -434,6 +434,18 @@
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
         <dsig:DigestValue>uRGvWW3x6VVV+dq3U3x4olh7AAt7hD4RAtjJgmW7YUI=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="StackExchange.Redis.dll" size="432128">
+      <assemblyIdentity name="StackExchange.Redis" version="1.2.6.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>ZJ4F3gek4/cPEO5c29bLHXoSS2eSPVL8PDuC31ukaQ4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

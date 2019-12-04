@@ -18,6 +18,8 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.IO;
+using LTE.Model;
+using System.Threading;
 
 namespace LTE.SeverImp
 {
@@ -1158,8 +1160,15 @@ namespace LTE.SeverImp
             layer1.ClearLayer();
             if (!layer1.constuctTIN())
                 return new Result(false, "无TIN");
-
+            
             return new Result(true,"Tin图层刷新成功");
+        }
+
+        public Result setLoadInfo(int userId, string taskName)
+        {
+            LoadInfo.UserId.Value = userId;
+            LoadInfo.taskName.Value = taskName;
+            return new Result(true, "任务进度设置成功");
         }
     }
 }
