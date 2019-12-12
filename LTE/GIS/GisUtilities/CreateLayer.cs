@@ -143,6 +143,9 @@ namespace LTE.GIS
             pGeoDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
             pGeoDefEdit.SpatialReference_2 = originalSpatialReference;
 
+            //在featureclass定义的时候应该加上geometryDefEdit.HasZ_2 = true; 不然无法将3d数据强行赋给2d的
+            pGeoDefEdit.HasZ_2 = true;
+
             //定义一个字段集合对象
             IFields pFields = new FieldsClass();
             IFieldsEdit pFieldsEdit = (IFieldsEdit)pFields;

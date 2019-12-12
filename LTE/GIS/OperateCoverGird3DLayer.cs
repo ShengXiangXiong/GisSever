@@ -16,6 +16,7 @@ using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Analyst3D;
 using LTE.DB;
 using LTE.InternalInterference.Grid;
+using LTE.Model;
 
 namespace LTE.GIS
 {
@@ -176,8 +177,21 @@ namespace LTE.GIS
             double gbaseheight = GridHelper.getInstance().getGBaseHeight();
             double gheight = GridHelper.getInstance().getGHeight();
             //循环添加
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = gridTable.Rows.Count;
+            loadInfo.loadCreate();
+
+            //循环添加
             foreach (DataRow dataRow in gridTable.Rows)
             {
+                if (cnt++ % 1000 == 0)
+                {
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
+                    Console.WriteLine("已计算  " + cnt + "/" + gridTable.Rows.Count);
+                }
                 gxid = int.Parse(dataRow["Gxid"].ToString());
                 gyid = int.Parse(dataRow["Gyid"].ToString());
                 level = int.Parse(dataRow["level"].ToString());
@@ -211,6 +225,7 @@ namespace LTE.GIS
 
 
                 pFeatureBuffer = pFeatureClass.CreateFeatureBuffer();
+                
                 pFeatureBuffer.Shape = pGeometryColl as IGeometry;
                 pFeatureBuffer.set_Value(this.GXIDIndex, gxid);
                 pFeatureBuffer.set_Value(this.GYIDIndex, gyid);
@@ -241,6 +256,9 @@ namespace LTE.GIS
 
             IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
             pFeatureClassManage.UpdateExtent();
+            //更新完成进度信息
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
 
             //GISMapApplication.Instance.RefreshLayer(pFeatureLayer);
             return true;

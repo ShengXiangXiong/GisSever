@@ -229,10 +229,14 @@ namespace LTE.GIS
             IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
             pFeatureClassManage.UpdateExtent();
 
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureClassManage);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(dataset);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(workspace);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureCursor);
+
             //更新完成进度信息
             loadInfo.cnt = cnt;
             loadInfo.loadUpdate();
-            loadInfo.loadFinish();
             //GISMapApplication.Instance.RefreshLayer(pFeatureLayer);
             return true;
         }
