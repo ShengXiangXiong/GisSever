@@ -1015,6 +1015,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
     ) order by TINID, VIndex
     ]]>
     </select>
+  
+  <insert id ="insAreaShp" parameterClass="Hashtable">
+    INSERT INTO [dbo].[tbAreaShpLayer] (MinLongitude,MinLatitude,MaxLongitude,MaxLatitude,ShpName,Type,DateTime)
+    VALUES (#MinLongitude#,#MinLatitude#,#MaxLongitude#,#MaxLatitude#,#ShpName#,#Type#,#DateTime#)
+  </insert>
 
   </statements>
 </sqlMap>
