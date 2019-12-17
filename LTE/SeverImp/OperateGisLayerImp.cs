@@ -1151,17 +1151,20 @@ namespace LTE.SeverImp
 
         public Result refreshTINLayer()
         {
-            OperateTINLayer layer = new OperateTINLayer(LayerNames.TIN);
+            string areaName = "南京";
+            string layerName = areaName + LayerNames.TIN1 + ".shp";
+            OperateTINLayer layer = new OperateTINLayer(layerName);
             layer.ClearLayer();
             if (!layer.constuctTIN())
                 return new Result(false, "无TIN");
 
-            OperateTINLayer layer1 = new OperateTINLayer(LayerNames.TIN1);
-            layer1.ClearLayer();
-            if (!layer1.constuctTIN())
-                return new Result(false, "无TIN");
-            
-            return new Result(true,"Tin图层刷新成功");
+            //OperateTINLayer layer1 = new OperateTINLayer(layerName);
+            //layer1.ClearLayer();
+            //if (!layer1.constuctTIN())
+            //    return new Result(false, "无TIN");
+
+            //return new Result(true,"Tin图层刷新成功");
+            return new Result { Ok = true, Msg = "刷新成功", ShpName = layerName };
         }
 
         public Result setLoadInfo(int userId, string taskName)

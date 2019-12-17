@@ -16,6 +16,7 @@ using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Analyst3D;
 
 using LTE.DB;
+using LTE.Model;
 
 namespace LTE.GIS
 {
@@ -28,9 +29,20 @@ namespace LTE.GIS
         // 列名
         public OperateTINLayer(string layerName)
         {
+            //IFeatureWorkspace featureWorkspace = MapWorkSpace.getWorkSpace();
+            //IFeatureClass fclass = featureWorkspace.OpenFeatureClass(layerName);
+            //IFeatureLayer flayer = new FeatureLayer();
+            //pFeatureLayer.FeatureClass = pFeatureClass;
+
             IFeatureWorkspace featureWorkspace = MapWorkSpace.getWorkSpace();
-            IFeatureClass fclass = featureWorkspace.OpenFeatureClass(layerName);
-            IFeatureLayer flayer = new FeatureLayer();
+            string path = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString();
+            //若不存在shp文件，则创建
+            if (!DefineLayer.findLayer(path, layerName))
+            {
+                new CreateLayer(path, layerName).CreateTinLayer();
+            }
+            pFeatureClass = featureWorkspace.OpenFeatureClass(layerName);
+            pFeatureLayer = new FeatureLayer();
             pFeatureLayer.FeatureClass = pFeatureClass;
 
             //pFeatureLayer = GISMapApplication.Instance.GetLayer(LayerNames.TIN) as IFeatureLayer;
@@ -49,7 +61,7 @@ namespace LTE.GIS
         /// <summary>
         /// 构造 TIN
         /// </summary>
-        public bool constuctTIN()
+        public bool constuctTIN1()
         {
             double minX = 0, minY = 0, maxX = 0, maxY = 0;
             InternalInterference.Grid.GridHelper.getInstance().getMinXY(ref minX, ref minY);
@@ -60,7 +72,7 @@ namespace LTE.GIS
             ht["maxX"] = maxX;
             ht["minY"] = minY;
             ht["maxY"] = maxY;
-            DataTable gridTable = IbatisHelper.ExecuteQueryForDataTable("GetTINVertex", ht);
+            DataTable gridTable = IbatisHelper.ExecuteQueryForDataTable("GetTINVertexByArea", ht);
             if (gridTable.Rows.Count < 1)
                 return false;
 
@@ -75,10 +87,21 @@ namespace LTE.GIS
 
             float x, y, z;
             List<IPoint> pts = new List<IPoint>();
-
+            //循环添加
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = gridTable.Rows.Count;
+            loadInfo.loadCreate();
             //循环添加
             foreach (DataRow dataRow in gridTable.Rows)
             {
+                if (cnt++ % 1000 == 0)
+                {
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
+                    Console.WriteLine("已计算  " + cnt + "/" + gridTable.Rows.Count);
+                }
                 if (!(float.TryParse(dataRow["VertexX"].ToString(), out x) && float.TryParse(dataRow["VertexY"].ToString(), out y) && float.TryParse(dataRow["VertexHeight"].ToString(), out z)))
                     continue;
 
@@ -106,6 +129,14 @@ namespace LTE.GIS
             IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
             pFeatureClassManage.UpdateExtent();
 
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureClassManage);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(dataset);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(workspace);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureCursor);
+
+            //更新完成进度信息
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
             //GISMapApplication.Instance.RefreshLayer(pFeatureLayer);
             return true;
         }
@@ -113,7 +144,7 @@ namespace LTE.GIS
         /// <summary>
         /// 构造 TIN 面
         /// </summary>
-        public bool constuctTIN1()
+        public bool constuctTIN()
         {
             double minX = 0, minY = 0, maxX = 0, maxY = 0;
             InternalInterference.Grid.GridHelper.getInstance().getMinXY(ref minX, ref minY);
@@ -124,7 +155,7 @@ namespace LTE.GIS
             ht["maxX"] = maxX;
             ht["minY"] = minY;
             ht["maxY"] = maxY;
-            DataTable gridTable = IbatisHelper.ExecuteQueryForDataTable("GetTINVertex", ht);
+            DataTable gridTable = IbatisHelper.ExecuteQueryForDataTable("GetTINVertexByArea", ht);
             if (gridTable.Rows.Count < 1)
                 return false;
 
@@ -139,10 +170,21 @@ namespace LTE.GIS
 
             float x, y, z;
             List<IPoint> pts = new List<IPoint>();
-
+            //循环添加
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = gridTable.Rows.Count;
+            loadInfo.loadCreate();
             //循环添加
             foreach (DataRow dataRow in gridTable.Rows)
             {
+                if (cnt++ % 1000 == 0)
+                {
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
+                    Console.WriteLine("已计算  " + cnt + "/" + gridTable.Rows.Count);
+                }
                 if (!(float.TryParse(dataRow["VertexX"].ToString(), out x) && float.TryParse(dataRow["VertexY"].ToString(), out y) && float.TryParse(dataRow["VertexHeight"].ToString(), out z)))
                     continue;
 
@@ -170,7 +212,17 @@ namespace LTE.GIS
 
             IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
             pFeatureClassManage.UpdateExtent();
+
             //GISMapApplication.Instance.RefreshLayer(pFeatureLayer);
+
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureClassManage);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(dataset);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(workspace);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureCursor);
+
+            //更新完成进度信息
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
             return true;
         }
     }

@@ -104,7 +104,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
 		</select>
 
 		<select id="GetSpecifiedCellGrids" parameterClass="Hashtable">
-			select a.GXID, a.GYID, b.MinX, b.MinY, b.MaxX, b.MaxY, a.ReceivedPowerdbm, a.PathLoss 
+			select a.GXID, a.GYID, b.MinX, b.MinY, b.MaxX, b.MaxY, a.ReceivedPowerdbm, a.PathLoss ,a.Level
 			from tbGridPathloss a, tbGridDem b 
 			where a.GXID = b.GXID and a.GYID = b.GYID and a.eNodeB = '$eNodeB$' 
 			and a.CI = '$CI$' and a.ReceivedPowerdbm > -130
@@ -1004,7 +1004,17 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
     <select id="GetGridLatitude" parameterClass="HashTable">
                 select GXID,GYID,CenterLatitude from tbAccelerateGridScene1
                 where GYID between '$minGYID$'  and '$maxGYID$'  and GZID=1
-    </select> 
+    </select>
+
+  <!--xsx.获取范围内的tin-->
+    <select id="GetTINVertexByArea" parameterClass="HashTable">
+      <![CDATA[
+    select distinct * from tbTIN where Tinid in (
+    select distinct  TINID from TinSurroundBox 
+	    EXCEPT(select TINID from TinSurroundBox b where b.MaxX<$minX$ or b.MaxY<$minY$ or $maxX$<b.Minx or $maxY$<b.Miny)
+    ) order by TINID, VIndex
+    ]]>
+    </select>
 
   </statements>
 </sqlMap>

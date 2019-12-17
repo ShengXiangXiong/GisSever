@@ -36,6 +36,7 @@ namespace LTE.GIS
         private int CIIndex;
         private int LongitudeIndex;
         private int LatitudeIndex;
+        private int LevelIndex;
 
         // 列名
         public OperateCoverGirdLayer(string layerName)
@@ -67,6 +68,7 @@ namespace LTE.GIS
             this.CIIndex = pFeatureClass.FindField("CI");
             this.LongitudeIndex = pFeatureClass.FindField("Longitude");
             this.LatitudeIndex = pFeatureClass.FindField("Latitude");
+            this.LevelIndex = pFeatureClass.FindField("Level");
         }
 
 
@@ -158,9 +160,10 @@ namespace LTE.GIS
             IFeatureCursor pFeatureCursor = pFeatureClass.Insert(true);
             IFeatureBuffer pFeatureBuffer;
 
-            int gxid, gyid;
-            float x1, y1, x2, y2;
-            float recePower, pathLoss;
+            int gxid, gyid, level;
+            double x1, y1, x2, y2, z;
+            double recePower, pathLoss;
+            double gheight = GridHelper.getInstance().getGHeight();
             //循环添加
             int cnt = 0;
             //初始化进度信息
@@ -178,20 +181,30 @@ namespace LTE.GIS
                 }
                 gxid = int.Parse(dataRow["Gxid"].ToString());
                 gyid = int.Parse(dataRow["Gyid"].ToString());
+                level = int.Parse(dataRow["Level"].ToString());
 
                 Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
                 double lon = p.X;
                 double lat = p.Y;
 
-                if (!(float.TryParse(dataRow["MinX"].ToString(), out x1) && float.TryParse(dataRow["MinY"].ToString(), out y1) && float.TryParse(dataRow["MaxX"].ToString(), out x2) && float.TryParse(dataRow["MaxY"].ToString(), out y2) && float.TryParse(dataRow["ReceivedPowerdbm"].ToString(), out recePower) && float.TryParse(dataRow["PathLoss"].ToString(), out pathLoss)))
-                    continue;
+                //if (!(float.TryParse(dataRow["MinX"].ToString(), out x1) && float.TryParse(dataRow["MinY"].ToString(), out y1) && float.TryParse(dataRow["MaxX"].ToString(), out x2) && float.TryParse(dataRow["MaxY"].ToString(), out y2) && float.TryParse(dataRow["ReceivedPowerdbm"].ToString(), out recePower) && float.TryParse(dataRow["PathLoss"].ToString(), out pathLoss)))
+                //    continue;
 
-                IPoint pointA = GeometryUtilities.ConstructPoint2D(x1, y1);
-                IPoint pointB = GeometryUtilities.ConstructPoint2D(x2, y1);
-                IPoint pointC = GeometryUtilities.ConstructPoint2D(x2, y2);
-                IPoint pointD = GeometryUtilities.ConstructPoint2D(x1, y2);
+                if (!(double.TryParse(dataRow["MinX"].ToString(), out x1) && double.TryParse(dataRow["MinY"].ToString(), out y1)))
+                    continue;
+                if (!(double.TryParse(dataRow["MaxX"].ToString(), out x2) && double.TryParse(dataRow["MaxY"].ToString(), out y2)))
+                    continue;
+                if (!(double.TryParse(dataRow["ReceivedPowerdbm"].ToString(), out recePower) && double.TryParse(dataRow["PathLoss"].ToString(), out pathLoss)))
+                    continue;
+                z = gheight * level;
+
+                IPoint pointA = GeometryUtilities.ConstructPoint3D(x1, y1, z);
+                IPoint pointB = GeometryUtilities.ConstructPoint3D(x2, y1, z);
+                IPoint pointC = GeometryUtilities.ConstructPoint3D(x2, y2, z);
+                IPoint pointD = GeometryUtilities.ConstructPoint3D(x1, y2, z);
 
                 IGeometryCollection pGeometryColl = GeometryUtilities.ConstructPolygon(new IPoint[] { pointA, pointB, pointC, pointD });
+                GeometryUtilities.MakeZAware(pGeometryColl as IGeometry);
 
                 pFeatureBuffer = pFeatureClass.CreateFeatureBuffer();
                 pFeatureBuffer.Shape = pGeometryColl as IGeometry;
@@ -200,7 +213,7 @@ namespace LTE.GIS
                 pFeatureBuffer.set_Value(this.eNodeBIndex, enodeb);
                 pFeatureBuffer.set_Value(this.CIIndex, ci);
                 pFeatureBuffer.set_Value(this.cellNameIndex, cellname);
-
+                pFeatureBuffer.set_Value(this.LevelIndex, level);
                 pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
                 pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
 
@@ -288,37 +301,43 @@ namespace LTE.GIS
             IFeatureCursor pFeatureCursor = fclass.Insert(true);
             IFeatureBuffer pFeatureBuffer;
 
-            int gxid, gyid, lac, ci;
-            float x1, y1, x2, y2;
-            float recePower, pathLoss;
+            //int gxid, gyid, lac, ci;
+            //float x1, y1, x2, y2;
+            //float recePower, pathLoss;
+            int lac, ci, gxid, gyid, level;
+            double x1, y1, x2, y2, z;
+            double recePower, pathLoss;
+            double gbaseheight = GridHelper.getInstance().getGBaseHeight();
+            double gheight = GridHelper.getInstance().getGHeight();
             //循环添加
             foreach (DataRow dataRow in gridTable.Rows)
             {
                 gxid = int.Parse(dataRow["GXID"].ToString());
                 gyid = int.Parse(dataRow["GYID"].ToString());
-
+                level = int.Parse(dataRow["Level"].ToString());
                 Geometric.Point p = GridHelper.getInstance().GridToGeo(gxid, gyid);
                 double lon = p.X;
                 double lat = p.Y;
-
                 //lac = int.Parse(dataRow["eNodeB"].ToString());
                 //ci = int.Parse(dataRow["CI"].ToString());
-                recePower = float.Parse(dataRow["ReceivedPowerdbm"].ToString());
-                pathLoss = float.Parse(dataRow["PathLoss"].ToString());
+                recePower = double.Parse(dataRow["ReceivedPowerdbm"].ToString());
+                pathLoss = double.Parse(dataRow["PathLoss"].ToString());
 
-                if (!(float.TryParse(dataRow["MinX"].ToString(), out x1)
-                    && float.TryParse(dataRow["MinY"].ToString(), out y1)
-                    && float.TryParse(dataRow["MaxX"].ToString(), out x2)
-                    && float.TryParse(dataRow["MaxY"].ToString(), out y2)))
+                if (!(double.TryParse(dataRow["MinX"].ToString(), out x1)
+                    && double.TryParse(dataRow["MinY"].ToString(), out y1)
+                    && double.TryParse(dataRow["MaxX"].ToString(), out x2)
+                    && double.TryParse(dataRow["MaxY"].ToString(), out y2)))
                     continue;
 
-                IPoint pointA = GeometryUtilities.ConstructPoint2D(x1, y1);
-                IPoint pointB = GeometryUtilities.ConstructPoint2D(x2, y1);
-                IPoint pointC = GeometryUtilities.ConstructPoint2D(x2, y2);
-                IPoint pointD = GeometryUtilities.ConstructPoint2D(x1, y2);
+                z = gheight * (level - 1) + gbaseheight;
+
+                IPoint pointA = GeometryUtilities.ConstructPoint3D(x1, y1, z);
+                IPoint pointB = GeometryUtilities.ConstructPoint3D(x2, y1, z);
+                IPoint pointC = GeometryUtilities.ConstructPoint3D(x2, y2, z);
+                IPoint pointD = GeometryUtilities.ConstructPoint3D(x1, y2, z);
 
                 IGeometryCollection pGeometryColl = GeometryUtilities.ConstructPolygon(new IPoint[] { pointA, pointB, pointC, pointD });
-
+                GeometryUtilities.MakeZAware(pGeometryColl as IGeometry);
 
                 pFeatureBuffer = pFeatureClass.CreateFeatureBuffer();
                 pFeatureBuffer.Shape = pGeometryColl as IGeometry;
@@ -329,6 +348,7 @@ namespace LTE.GIS
                 pFeatureBuffer.set_Value(this.cellNameIndex, "");
                 pFeatureBuffer.set_Value(this.LongitudeIndex, lon);
                 pFeatureBuffer.set_Value(this.LatitudeIndex, lat);
+                pFeatureBuffer.set_Value(this.LevelIndex, level);
                 if (recePower > -41)
                     pFeatureBuffer.set_Value(this.RecePowerIndex, -41);
                 //else if(recePower < -110)
