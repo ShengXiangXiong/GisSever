@@ -1192,11 +1192,25 @@ namespace LTE.SeverImp
 
         public Result refreshDTLayer(string bts, int dis, double minx, double miny, double maxx, double maxy)
         {
-            OperateDTLayer layer = new OperateDTLayer();
-            layer.ClearLayer();
-            if (!layer.constuctDTGrids())
-                return new Result(false, "路测数据不存在");
-            return new Result(true, "路测图层刷新成功");
+            try
+            {
+
+                OperateDTLayer dtlayer = new OperateDTLayer("TD路测.shp");
+                
+                dtlayer.ClearLayer();
+                if (dtlayer.constuctDTGrids(bts, dis, minx, miny, maxx, maxy))
+                {
+                    return new Result { Ok = true, Msg = "DT图层刷新成功", ShpName = "路测点" };
+                }
+                else
+                {
+                    return new Result(false, "无数据");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Result(false, string.Format("出现异常：{0}", ex.ToString()));
+            }
         }
 
         public Result refreshGroundCover(string cellName)

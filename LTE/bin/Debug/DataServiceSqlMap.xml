@@ -1021,5 +1021,30 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
     VALUES (#MinLongitude#,#MinLatitude#,#MaxLongitude#,#MaxLatitude#,#ShpName#,#Type#,#DateTime#)
   </insert>
 
+  <!--路测数据显示-->
+  <select id ="GetDTInfo">
+    SELECT x,y,ID,Device,PCI,RSRP,SINR,eNodeBID,Btsname
+    FROM tbDTData
+  </select>
+  <select id ="GetDTInfoWithDis" parameterClass="Hashtable">
+    SELECT x,y,ID,Device,PCI,RSRP,SINR,eNodeBID,Btsname
+    FROM tbDTData
+    where $distance$>SCell_Dist
+  </select>
+  <select id ="GetDTInfoWithBts" parameterClass="Hashtable">
+    SELECT x,y,ID,Device,PCI,RSRP,SINR,eNodeBID,Btsname
+    FROM tbDTData
+    where BtsName = '$btsname$'
+  </select>
+  <select id ="GetDTInfoWithBoth" parameterClass="Hashtable">
+    SELECT x,y,ID,Device,PCI,RSRP,SINR,eNodeBID,Btsname
+    FROM tbDTData
+    where $distance$>SCell_Dist and BtsName = '$btsname$'
+  </select>
+  <select id ="GetDTByRangeXY" parameterClass="Hashtable">
+    SELECT x,y,ID,Device,PCI,RSRP,SINR,eNodeBID,Btsname
+    FROM tbDTData
+    where $maxx$>x and $maxy$>y and x>$minx$ and y>$miny$
+  </select>
   </statements>
 </sqlMap>
