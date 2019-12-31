@@ -255,6 +255,9 @@ namespace LTE.GIS
             //addFiled("Level", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             //addFiled("Longitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             //addFiled("Latitude", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("point1", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("point2", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
+            addFiled("point3", esriFieldType.esriFieldTypeString, ref pFieldsEdit);
             return GetLayer(workspaceDirectory, fileName, pFields);
         }
     }

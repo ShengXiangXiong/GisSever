@@ -26,6 +26,7 @@ namespace LTE.SeverImp
 {
     class  OperateGisLayerImp : OpreateGisLayer.Iface
     {
+        LoadInfo LoadInfo = new LoadInfo();
         public Result cluster()
         {
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
@@ -1031,6 +1032,7 @@ namespace LTE.SeverImp
         {
             //图层切片 .xsx
             int shpSize = 50;
+            LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid-minXid)*(maxYid-minYid)/(shpSize*shpSize)));
             for (int i = minXid; i <= maxXid; )
             {
                 for (int j = minYid; j <= maxYid; )
@@ -1055,6 +1057,8 @@ namespace LTE.SeverImp
                     IbatisHelper.ExecuteInsert("insAreaShp", ht);
 
                     j = Math.Min(maxYid, j + shpSize);
+
+                    LoadInfo.loadHashAdd(1);
                 }
                 i = Math.Min(maxXid, i + shpSize);
             }
@@ -1106,6 +1110,7 @@ namespace LTE.SeverImp
         {
             //图层切片 .xsx
             int shpSize = 50;
+            LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid - minXid) * (maxYid - minYid) / (shpSize * shpSize)));
             for (int i = minXid; i <= maxXid;)
             {
                 for (int j = minYid; j <= maxYid;)
@@ -1154,6 +1159,7 @@ namespace LTE.SeverImp
                     IbatisHelper.ExecuteInsert("insAreaShp", ht);
 
                     j = Math.Min(maxYid, j + shpSize);
+                    LoadInfo.loadHashAdd(1);
                 }
                 i = Math.Min(maxXid, i + shpSize);
             }
@@ -1217,6 +1223,7 @@ namespace LTE.SeverImp
         {
             //图层切片 .xsx
             int shpSize = 50;
+            LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid - minXid) * (maxYid - minYid) / (shpSize * shpSize)));
             for (int i = minXid; i <= maxXid;)
             {
                 for (int j = minYid; j <= maxYid;)
@@ -1241,6 +1248,7 @@ namespace LTE.SeverImp
                     IbatisHelper.ExecuteInsert("insAreaShp", ht);
 
                     j = Math.Min(maxYid, j + shpSize);
+                    LoadInfo.loadHashAdd(1);
                 }
                 i = Math.Min(maxXid, i + shpSize);
             }
@@ -1261,6 +1269,11 @@ namespace LTE.SeverImp
             if (!layer.constuctGrid3Ds())
                 return new Result(false, "无干扰源");
             return new Result(true,"网外干扰刷新成功");
+        }
+
+        public Result refreshSPLayer(string version)
+        {
+            throw new NotImplementedException();
         }
 
         public Result refreshTINLayer()
