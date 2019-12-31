@@ -28,6 +28,12 @@ namespace LTE.SeverImp
     {
         public Result cluster()
         {
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
+
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
             DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetClusterPosition", null);  // Ibatis 数据访问,得到聚类图层文件位置
@@ -67,6 +73,11 @@ namespace LTE.SeverImp
             {
                 return new Result(false, ex.ToString());
             }
+
+            cnt++;
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
+
             DataTable dt3;//查询场景信息
             Dictionary<int, int> myDictionary = new Dictionary<int, int>();
             int a, b;
@@ -152,6 +163,11 @@ namespace LTE.SeverImp
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pFC);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pTable);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pCursor);
+
+            cnt++;
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
+
             DataTable dt4;//查询场景所属的簇序号
             myDictionary.Clear();
             ht.Clear();//分行读取
@@ -233,6 +249,7 @@ namespace LTE.SeverImp
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pTable1);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pCursor1);
             myDictionary.Clear();
+            /*
             DataTable dt5;//查询经度信息
             Dictionary<int, double> myDictionary1 = new Dictionary<int, double>();
             ht.Clear();//分行读取
@@ -396,6 +413,7 @@ namespace LTE.SeverImp
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pFC3);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pTable3);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pCursor3);
+            */
             try//添加坐标系.prj文件
             {
                 string path = @"D:\test10.8\building.prj";//后期需要更改
@@ -412,6 +430,9 @@ namespace LTE.SeverImp
                 return new Result(false, ex.ToString());
             }
             IbatisHelper.ExecuteUpdate("UpdatetbDependTableClusterShp", null);
+            cnt++;
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
             return new Result(true, "成功");
         }
 
@@ -458,6 +479,13 @@ namespace LTE.SeverImp
                 CF.cell_height = cellsize;
                 CF.cell_width = cellsize;
                 CF.geometry_type = "POLYGON";
+
+                int cnt = 0;
+                //初始化进度信息
+                LoadInfo loadInfo = new LoadInfo();
+                loadInfo.count = 2;
+                loadInfo.loadCreate();
+
                 try
                 {
                     //数据库网格
@@ -502,6 +530,10 @@ namespace LTE.SeverImp
                 catch (Exception ex)
                 { return new Result(false, ex.ToString()); }
 
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
+           
                 try
                 {
                     geoprocessor.Execute(CF, null);
@@ -515,6 +547,9 @@ namespace LTE.SeverImp
                     }
                     return new Result(false, info);
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 return new Result(true, "渔网生成结束");
             }
             catch (System.Data.SqlClient.SqlException err)
@@ -542,6 +577,11 @@ namespace LTE.SeverImp
         {
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
             try
             {
                 DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
@@ -568,6 +608,11 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "111" + ex.ToString());
                 }
+
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
+
                 Dictionary<int, double> myDictionary = new Dictionary<int, double>();
                 //计算面积
                 try
@@ -619,6 +664,11 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "222," + ex1.ToString());
                 }
+
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
+
                 //结果入库
                 DataTable dt4 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt4.Rows[0][0].ToString(),
@@ -666,6 +716,10 @@ namespace LTE.SeverImp
                     dt.Clear();
                     IbatisHelper.ExecuteUpdate("UpdatetbAccelerateGridBuildingByTmp", null);
                     IbatisHelper.ExecuteDelete("DeletetbAccelerateGridSceneTmpBuilding", null);
+                    cnt++;
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
+                 //   loadInfo.loadFinish();
                     return new Result(true, "建筑物叠加成功");
                 }
                 catch (Exception ex2)
@@ -698,6 +752,11 @@ namespace LTE.SeverImp
         {
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
             try
             {
                 //叠加分析
@@ -727,6 +786,9 @@ namespace LTE.SeverImp
                     }
                     return new Result(false, "111" + info);
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 Dictionary<int, double> myDictionary = new Dictionary<int, double>();
                 //计算面积
                 try
@@ -778,6 +840,9 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "222," + ex1.ToString());
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 //结果入库
                 DataTable dt4 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt4.Rows[0][0].ToString(),
@@ -825,10 +890,15 @@ namespace LTE.SeverImp
                     dt.Clear();
                     IbatisHelper.ExecuteUpdate("UpdatetbAccelerateGridGrassByTmp", null);
                     IbatisHelper.ExecuteDelete("DeletetbAccelerateGridSceneTmpGrass", null);
+                    cnt++;
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
+                //    loadInfo.loadFinish();
                     return new Result(true, "草地叠加成功");
                 }
                 catch (Exception ex2)
                 {
+                    Console.WriteLine(ex2.ToString());
                     return new Result(false, "333," + ex2.ToString());
                 }
             }
@@ -857,6 +927,11 @@ namespace LTE.SeverImp
         {
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
             try
             {
                 //叠加分析
@@ -886,6 +961,9 @@ namespace LTE.SeverImp
                     }
                     return new Result(false, "111" + info);
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 Dictionary<int, double> myDictionary = new Dictionary<int, double>();
                 //计算面积
                 try
@@ -937,6 +1015,9 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "222," + ex1.ToString());
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 //结果入库
                 DataTable dt4 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt4.Rows[0][0].ToString(),
@@ -984,6 +1065,9 @@ namespace LTE.SeverImp
                     dt.Clear();
                     IbatisHelper.ExecuteUpdate("UpdatetbAccelerateGridWaterByTmp", null);
                     IbatisHelper.ExecuteDelete("DeletetbAccelerateGridSceneTmpWater", null);
+                    cnt++;
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
                     return new Result(true, "水面叠加成功");
                 }
                 catch (Exception ex2)
