@@ -37,8 +37,8 @@ namespace LTE.SeverImp
 
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
-            DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetClusterPosition", null);  // Ibatis 数据访问,得到聚类图层文件位置
-            string filepath = dt1.Rows[0][0].ToString();
+        //    DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetClusterPosition", null);  // Ibatis 数据访问,得到聚类图层文件位置
+            string filepath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\cluster.shp";
             DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
             string minx_text = dt2.Rows[0][0].ToString(),
                    miny_text = dt2.Rows[0][1].ToString(),
@@ -417,7 +417,8 @@ namespace LTE.SeverImp
             */
             try//添加坐标系.prj文件
             {
-                string path = @"D:\test10.8\building.prj";//后期需要更改
+                //string path = @"D:\test10.8\building.prj";//后期需要更改
+                string path = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\building.prj";
                 string fileName = System.IO.Path.GetFileName(filepath);
                 string[] a1 = fileName.Split('.');
                 string name = a1[0];
@@ -427,6 +428,20 @@ namespace LTE.SeverImp
                 File.Copy(path, path2, true);//允许覆盖目的地的同名文件
             }
             catch (Exception ex)
+            {
+                return new Result(false, ex.ToString());
+            }
+            try
+            {
+                Hashtable ht1 = new Hashtable();
+                ht1["IndexName"] = "聚类结果图层";
+                ht1["ShpName"] = "cluster.shp";
+                ht1["Type"] = "cluster";
+                ht1["DateTime"] = DateTime.Now;
+                IbatisHelper.ExecuteInsert("clustersite", ht1);
+                IbatisHelper.ExecuteUpdate("UpdatetbDependTableClusterShp", null);
+            }
+            catch(Exception ex)
             {
                 return new Result(false, ex.ToString());
             }
@@ -441,8 +456,11 @@ namespace LTE.SeverImp
         {
             try
             {
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string filepath = dt1.Rows[0][0].ToString();
+            //    string path = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString();
+
+           //     DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string filepath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString()+ "\\f.shp";
+           //     return new Result(true ,filepath);
                 DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt2.Rows[0][0].ToString(),
                        miny_text = dt2.Rows[0][1].ToString(),
@@ -585,12 +603,12 @@ namespace LTE.SeverImp
             loadInfo.loadCreate();
             try
             {
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string fishnetpath = dt1.Rows[0][0].ToString();
-                DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
-                string buildingpath = dt2.Rows[0][0].ToString();
-                DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
-                string buildingoverlaypath = dt3.Rows[0][0].ToString();
+             //   DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string fishnetpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\f.shp";
+            //    DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
+                string buildingpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\building.shp";
+            //    DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
+                string buildingoverlaypath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\building_overlay.shp";
                 string out_feature = buildingoverlaypath;
                 try
                 {
@@ -761,12 +779,12 @@ namespace LTE.SeverImp
             try
             {
                 //叠加分析
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string fishnetpath = dt1.Rows[0][0].ToString();
-                DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
-                string grasspath = dt2.Rows[0][0].ToString();
-                DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
-                string grassoverlaypath = dt3.Rows[0][0].ToString();
+              //  DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string fishnetpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\f.shp";
+            //    DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassPosition", null);  // Ibatis 数据访问,得到草地图层文件位置
+                string grasspath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\grass.shp";
+            //    DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassOverlayPosition", null);  // Ibatis 数据访问,得到草地叠加结果图层文件位置
+                string grassoverlaypath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\grass_overlay.shp";
                 string out_feature = grassoverlaypath;
                 Geoprocessor gp = new Geoprocessor();
                 gp.OverwriteOutput = true;
@@ -936,12 +954,12 @@ namespace LTE.SeverImp
             try
             {
                 //叠加分析
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string fishnetpath = dt1.Rows[0][0].ToString();
-                DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
-                string waterpath = dt2.Rows[0][0].ToString();
-                DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
-                string wateroverlaypath = dt3.Rows[0][0].ToString();
+            //    DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string fishnetpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\f.shp";
+            //    DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
+                string waterpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\water.shp";
+            //    DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
+                string wateroverlaypath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\water_overlay.shp";
                 string out_feature = wateroverlaypath;
                 Geoprocessor gp = new Geoprocessor();
                 gp.OverwriteOutput = true;

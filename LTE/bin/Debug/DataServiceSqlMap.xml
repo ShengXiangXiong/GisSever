@@ -1006,6 +1006,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
                 where GYID between '$minGYID$'  and '$maxGYID$'  and GZID=1
     </select>
 
+  <insert id ="clustersite" parameterClass="Hashtable">
+    INSERT INTO [dbo].[tbShpLayer] (IndexName,ShpName,Type,DateTime)
+    VALUES (#IndexName#,#ShpName#,#Type#,#DateTime#)
+  </insert>
+
   <!--xsx.获取范围内的tin-->
     <select id="GetTINVertexByArea" parameterClass="HashTable">
       <![CDATA[
