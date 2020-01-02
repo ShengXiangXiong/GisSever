@@ -28,7 +28,6 @@ namespace LTE.SeverImp
     {
         public Result cluster()
         {
-            
             int cnt = 0;
             //初始化进度信息
             LoadInfo loadInfo = new LoadInfo();
@@ -445,6 +444,7 @@ namespace LTE.SeverImp
             {
                 return new Result(false, ex.ToString());
             }
+            IbatisHelper.ExecuteUpdate("UpdatetbDependTableClusterShp", null);
             cnt++;
             loadInfo.cnt = cnt;
             loadInfo.loadUpdate();
