@@ -1200,7 +1200,29 @@ namespace LTE.SeverImp
                 dtlayer.ClearLayer();
                 if (dtlayer.constuctDTGrids(bts, dis, minx, miny, maxx, maxy))
                 {
-                    return new Result { Ok = true, Msg = "DT图层刷新成功", ShpName = "路测点" };
+                    return new Result { Ok = true, Msg = "DT图层刷新成功", ShpName = "TD路测" };
+                }
+                else
+                {
+                    return new Result(false, "无数据");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Result(false, string.Format("出现异常：{0}", ex.ToString()));
+            }
+        }
+
+        public Result refreshSPLayer(string version)
+        {
+            try
+            {
+                OperateSelectPointsLayer dtlayer = new OperateSelectPointsLayer("反向跟踪点集.shp");
+
+                dtlayer.ClearLayer();
+                if (dtlayer.ConstuctSelectPoints(version))
+                {
+                    return new Result { Ok = true, Msg = "反向跟踪点集", ShpName = "反向跟踪点集" };
                 }
                 else
                 {

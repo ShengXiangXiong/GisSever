@@ -1046,5 +1046,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
     FROM tbDTData
     where $maxx$>x and $maxy$>y and x>$minx$ and y>$miny$
   </select>
+
+  <select id = "GetSelectedPoint" parameterClass="Hashtable">
+    SELECT  *
+    FROM  tbSelectedPoints
+    where fromName = '$fromName$'
+  </select>
   </statements>
 </sqlMap>

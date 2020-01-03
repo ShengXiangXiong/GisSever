@@ -201,6 +201,7 @@
     <Compile Include="GIS\OperateSmoothBuildingLayer.cs" />
     <Compile Include="GIS\OperateTINLayer.cs" />
     <Compile Include="GIS\PointConvertByProj.cs" />
+    <Compile Include="GIS\OperateSelectPointsLayer.cs" />
     <Compile Include="InternalInterference\AdjCoeffHelper.cs" />
     <Compile Include="InternalInterference\Grid\Math\Divide.cs" />
     <Compile Include="InternalInterference\Grid\Math\LM.cs" />
@@ -317,6 +318,7 @@
     <Compile Include="SeverImp\OperateGisLayerImp.cs" />
     <Compile Include="SeverImp\GisSever.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="Utils\PointConvertByProj.cs" />
     <Compile Include="Utils\RedisHelper.cs" />
     <Compile Include="Utils\validate.cs" />
     <Compile Include="Win32Lib\ConsoleShow.cs" />
@@ -357,7 +359,9 @@
     <EmbeddedResource Include="GIS\SceneTool\fly.bmp" />
     <EmbeddedResource Include="GIS\SceneTool\fly.cur" />
     <Content Include="bin\Debug\CELL.xml" />
-    <Content Include="bin\Debug\DataServiceSqlMap.xml" />
+    <Content Include="bin\Debug\DataServiceSqlMap.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\tbAccelerateGridTIN.xml" />
     <Content Include="GIS\SceneTool\fly1.cur" />
     <EmbeddedResource Include="GIS\SceneTool\fullextent.bmp" />
