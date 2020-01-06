@@ -25,6 +25,9 @@ namespace LTE.GIS
     {
         private IFeatureLayer pFeatureLayer;
         private IFeatureClass pFeatureClass;
+        private int point1Index;
+        private int point2Index;
+        private int point3Index;
 
         // 列名
         public OperateTINLayer(string layerName)
@@ -44,6 +47,9 @@ namespace LTE.GIS
             pFeatureClass = featureWorkspace.OpenFeatureClass(layerName);
             pFeatureLayer = new FeatureLayer();
             pFeatureLayer.FeatureClass = pFeatureClass;
+            this.point1Index = pFeatureClass.FindField("point1");
+            this.point2Index = pFeatureClass.FindField("point2");
+            this.point3Index = pFeatureClass.FindField("point3");
 
             //pFeatureLayer = GISMapApplication.Instance.GetLayer(LayerNames.TIN) as IFeatureLayer;
             //pFeatureClass = pFeatureLayer.FeatureClass;
@@ -197,8 +203,14 @@ namespace LTE.GIS
                     GeometryUtilities.MakeZAware(pGeometryColl as IGeometry);
                     pFeatureBuffer = pFeatureClass.CreateFeatureBuffer();
                     pFeatureBuffer.Shape = pGeometryColl as IGeometry;
-                    pFeatureCursor.InsertFeature(pFeatureBuffer);
+                    PointConvert.Instance.GetGeoPoint(pts[0]);
+                    PointConvert.Instance.GetGeoPoint(pts[1]);
+                    PointConvert.Instance.GetGeoPoint(pts[2]);
+                    pFeatureBuffer.set_Value(this.point1Index, string.Format("{0},{1},{2}",pts[0].X,pts[0].Y,pts[0].Z));
+                    pFeatureBuffer.set_Value(this.point2Index, string.Format("{0},{1},{2}", pts[1].X, pts[1].Y, pts[1].Z));
+                    pFeatureBuffer.set_Value(this.point3Index, string.Format("{0},{1},{2}", pts[2].X, pts[2].Y, pts[2].Z));
 
+                    pFeatureCursor.InsertFeature(pFeatureBuffer);
                     pts.Clear();
                 }
             }
