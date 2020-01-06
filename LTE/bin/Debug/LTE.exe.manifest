@@ -415,12 +415,14 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="754688">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="LTE.exe" size="750080">
       <assemblyIdentity name="LTE" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>NVgt02eE9NFGBlfqHWtN1ydBGnoYGhlGcoOH9ahNEkU=</dsig:DigestValue>
         <dsig:DigestValue>bgXk8Jznd/IAxW+CVOw2/+AaSODAaqdKTYOY4OAOt9U=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
@@ -489,6 +491,7 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>DkeznD97pXDekRCj0Jp7Ee+ozKVYu9j/Ph0p2RbaTCA=</dsig:DigestValue>
+      <dsig:DigestValue>6FGERsGgKDj84Z1PQmBOaCcPjthjYaaqUev6hC4vCJA=</dsig:DigestValue>
     </hash>
   </file>
   <file name="bin\Debug\tbAccelerateGridTIN.xml" size="5624" writeableType="applicationData">
@@ -509,13 +512,13 @@
       <dsig:DigestValue>wo1uFGWp/BuVWY5juT5X7Myy47NeivQKE0hPYmyuffM=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="LTE.exe.config" size="576">
+  <file name="LTE.exe.config" size="558">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>iS9FV9xH8mmBz+jpEjH+Qetc5hsxXGuUnbMpcxVgisE=</dsig:DigestValue>
+      <dsig:DigestValue>PomPhAHjqlUm8Y9JomtNhMRGYjjJxKy8YnWaDMWs4EM=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

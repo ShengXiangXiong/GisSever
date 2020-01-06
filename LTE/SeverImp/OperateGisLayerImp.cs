@@ -26,12 +26,19 @@ namespace LTE.SeverImp
 {
     class  OperateGisLayerImp : OpreateGisLayer.Iface
     {
+        LoadInfo LoadInfo = new LoadInfo();
         public Result cluster()
         {
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
+
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
-            DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetClusterPosition", null);  // Ibatis 数据访问,得到聚类图层文件位置
-            string filepath = dt1.Rows[0][0].ToString();
+        //    DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetClusterPosition", null);  // Ibatis 数据访问,得到聚类图层文件位置
+            string filepath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\cluster.shp";
             DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
             string minx_text = dt2.Rows[0][0].ToString(),
                    miny_text = dt2.Rows[0][1].ToString(),
@@ -67,6 +74,11 @@ namespace LTE.SeverImp
             {
                 return new Result(false, ex.ToString());
             }
+
+            cnt++;
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
+
             DataTable dt3;//查询场景信息
             Dictionary<int, int> myDictionary = new Dictionary<int, int>();
             int a, b;
@@ -152,6 +164,11 @@ namespace LTE.SeverImp
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pFC);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pTable);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pCursor);
+
+            cnt++;
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
+
             DataTable dt4;//查询场景所属的簇序号
             myDictionary.Clear();
             ht.Clear();//分行读取
@@ -233,6 +250,7 @@ namespace LTE.SeverImp
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pTable1);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pCursor1);
             myDictionary.Clear();
+            /*
             DataTable dt5;//查询经度信息
             Dictionary<int, double> myDictionary1 = new Dictionary<int, double>();
             ht.Clear();//分行读取
@@ -396,9 +414,11 @@ namespace LTE.SeverImp
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pFC3);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pTable3);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(pCursor3);
+            */
             try//添加坐标系.prj文件
             {
-                string path = @"D:\test10.8\building.prj";//后期需要更改
+                //string path = @"D:\test10.8\building.prj";//后期需要更改
+                string path = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\building.prj";
                 string fileName = System.IO.Path.GetFileName(filepath);
                 string[] a1 = fileName.Split('.');
                 string name = a1[0];
@@ -411,7 +431,24 @@ namespace LTE.SeverImp
             {
                 return new Result(false, ex.ToString());
             }
+            try
+            {
+                Hashtable ht1 = new Hashtable();
+                ht1["IndexName"] = "聚类结果图层";
+                ht1["ShpName"] = "cluster.shp";
+                ht1["Type"] = "cluster";
+                ht1["DateTime"] = DateTime.Now;
+                IbatisHelper.ExecuteInsert("clustersite", ht1);
+                IbatisHelper.ExecuteUpdate("UpdatetbDependTableClusterShp", null);
+            }
+            catch(Exception ex)
+            {
+                return new Result(false, ex.ToString());
+            }
             IbatisHelper.ExecuteUpdate("UpdatetbDependTableClusterShp", null);
+            cnt++;
+            loadInfo.cnt = cnt;
+            loadInfo.loadUpdate();
             return new Result(true, "成功");
         }
 
@@ -419,8 +456,11 @@ namespace LTE.SeverImp
         {
             try
             {
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string filepath = dt1.Rows[0][0].ToString();
+            //    string path = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString();
+
+           //     DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string filepath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString()+ "\\f.shp";
+           //     return new Result(true ,filepath);
                 DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt2.Rows[0][0].ToString(),
                        miny_text = dt2.Rows[0][1].ToString(),
@@ -458,6 +498,13 @@ namespace LTE.SeverImp
                 CF.cell_height = cellsize;
                 CF.cell_width = cellsize;
                 CF.geometry_type = "POLYGON";
+
+                int cnt = 0;
+                //初始化进度信息
+                LoadInfo loadInfo = new LoadInfo();
+                loadInfo.count = 2;
+                loadInfo.loadCreate();
+
                 try
                 {
                     //数据库网格
@@ -502,6 +549,10 @@ namespace LTE.SeverImp
                 catch (Exception ex)
                 { return new Result(false, ex.ToString()); }
 
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
+           
                 try
                 {
                     geoprocessor.Execute(CF, null);
@@ -515,6 +566,9 @@ namespace LTE.SeverImp
                     }
                     return new Result(false, info);
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 return new Result(true, "渔网生成结束");
             }
             catch (System.Data.SqlClient.SqlException err)
@@ -542,14 +596,19 @@ namespace LTE.SeverImp
         {
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
             try
             {
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string fishnetpath = dt1.Rows[0][0].ToString();
-                DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
-                string buildingpath = dt2.Rows[0][0].ToString();
-                DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
-                string buildingoverlaypath = dt3.Rows[0][0].ToString();
+             //   DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string fishnetpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\f.shp";
+            //    DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
+                string buildingpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\building.shp";
+            //    DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetBuildingOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
+                string buildingoverlaypath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\building_overlay.shp";
                 string out_feature = buildingoverlaypath;
                 try
                 {
@@ -568,6 +627,11 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "111" + ex.ToString());
                 }
+
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
+
                 Dictionary<int, double> myDictionary = new Dictionary<int, double>();
                 //计算面积
                 try
@@ -619,6 +683,11 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "222," + ex1.ToString());
                 }
+
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
+
                 //结果入库
                 DataTable dt4 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt4.Rows[0][0].ToString(),
@@ -666,6 +735,10 @@ namespace LTE.SeverImp
                     dt.Clear();
                     IbatisHelper.ExecuteUpdate("UpdatetbAccelerateGridBuildingByTmp", null);
                     IbatisHelper.ExecuteDelete("DeletetbAccelerateGridSceneTmpBuilding", null);
+                    cnt++;
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
+                 //   loadInfo.loadFinish();
                     return new Result(true, "建筑物叠加成功");
                 }
                 catch (Exception ex2)
@@ -698,15 +771,20 @@ namespace LTE.SeverImp
         {
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
             try
             {
                 //叠加分析
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string fishnetpath = dt1.Rows[0][0].ToString();
-                DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
-                string grasspath = dt2.Rows[0][0].ToString();
-                DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
-                string grassoverlaypath = dt3.Rows[0][0].ToString();
+              //  DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string fishnetpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\f.shp";
+            //    DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassPosition", null);  // Ibatis 数据访问,得到草地图层文件位置
+                string grasspath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\grass.shp";
+            //    DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetGrassOverlayPosition", null);  // Ibatis 数据访问,得到草地叠加结果图层文件位置
+                string grassoverlaypath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\grass_overlay.shp";
                 string out_feature = grassoverlaypath;
                 Geoprocessor gp = new Geoprocessor();
                 gp.OverwriteOutput = true;
@@ -727,6 +805,9 @@ namespace LTE.SeverImp
                     }
                     return new Result(false, "111" + info);
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 Dictionary<int, double> myDictionary = new Dictionary<int, double>();
                 //计算面积
                 try
@@ -778,6 +859,9 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "222," + ex1.ToString());
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 //结果入库
                 DataTable dt4 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt4.Rows[0][0].ToString(),
@@ -825,10 +909,15 @@ namespace LTE.SeverImp
                     dt.Clear();
                     IbatisHelper.ExecuteUpdate("UpdatetbAccelerateGridGrassByTmp", null);
                     IbatisHelper.ExecuteDelete("DeletetbAccelerateGridSceneTmpGrass", null);
+                    cnt++;
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
+                //    loadInfo.loadFinish();
                     return new Result(true, "草地叠加成功");
                 }
                 catch (Exception ex2)
                 {
+                    Console.WriteLine(ex2.ToString());
                     return new Result(false, "333," + ex2.ToString());
                 }
             }
@@ -857,15 +946,20 @@ namespace LTE.SeverImp
         {
             ESRI.ArcGIS.esriSystem.IAoInitialize ao = new ESRI.ArcGIS.esriSystem.AoInitialize();
             ao.Initialize(ESRI.ArcGIS.esriSystem.esriLicenseProductCode.esriLicenseProductCodeStandard);
+            int cnt = 0;
+            //初始化进度信息
+            LoadInfo loadInfo = new LoadInfo();
+            loadInfo.count = 3;
+            loadInfo.loadCreate();
             try
             {
                 //叠加分析
-                DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
-                string fishnetpath = dt1.Rows[0][0].ToString();
-                DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
-                string waterpath = dt2.Rows[0][0].ToString();
-                DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
-                string wateroverlaypath = dt3.Rows[0][0].ToString();
+            //    DataTable dt1 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetPosition", null);  // Ibatis 数据访问,得到渔网图层文件位置
+                string fishnetpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\f.shp";
+            //    DataTable dt2 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterPosition", null);  // Ibatis 数据访问,得到建筑物图层文件位置
+                string waterpath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\water.shp";
+            //    DataTable dt3 = DB.IbatisHelper.ExecuteQueryForDataTable("GetWaterOverlayPosition", null);  // Ibatis 数据访问,得到建筑物叠加结果图层文件位置
+                string wateroverlaypath = System.Configuration.ConfigurationSettings.AppSettings["GisPath"].ToString() + "\\water_overlay.shp";
                 string out_feature = wateroverlaypath;
                 Geoprocessor gp = new Geoprocessor();
                 gp.OverwriteOutput = true;
@@ -886,6 +980,9 @@ namespace LTE.SeverImp
                     }
                     return new Result(false, "111" + info);
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 Dictionary<int, double> myDictionary = new Dictionary<int, double>();
                 //计算面积
                 try
@@ -937,6 +1034,9 @@ namespace LTE.SeverImp
                 {
                     return new Result(false, "222," + ex1.ToString());
                 }
+                cnt++;
+                loadInfo.cnt = cnt;
+                loadInfo.loadUpdate();
                 //结果入库
                 DataTable dt4 = DB.IbatisHelper.ExecuteQueryForDataTable("GetFishnetRange", null);  // Ibatis 数据访问，得到目标区域范围
                 string minx_text = dt4.Rows[0][0].ToString(),
@@ -984,6 +1084,9 @@ namespace LTE.SeverImp
                     dt.Clear();
                     IbatisHelper.ExecuteUpdate("UpdatetbAccelerateGridWaterByTmp", null);
                     IbatisHelper.ExecuteDelete("DeletetbAccelerateGridSceneTmpWater", null);
+                    cnt++;
+                    loadInfo.cnt = cnt;
+                    loadInfo.loadUpdate();
                     return new Result(true, "水面叠加成功");
                 }
                 catch (Exception ex2)
@@ -1031,6 +1134,7 @@ namespace LTE.SeverImp
         {
             //图层切片 .xsx
             int shpSize = 50;
+            LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid-minXid)*(maxYid-minYid)/(shpSize*shpSize)));
             for (int i = minXid; i <= maxXid; )
             {
                 for (int j = minYid; j <= maxYid; )
@@ -1055,6 +1159,8 @@ namespace LTE.SeverImp
                     IbatisHelper.ExecuteInsert("insAreaShp", ht);
 
                     j = Math.Min(maxYid, j + shpSize);
+
+                    LoadInfo.loadHashAdd(1);
                 }
                 i = Math.Min(maxXid, i + shpSize);
             }
@@ -1106,6 +1212,7 @@ namespace LTE.SeverImp
         {
             //图层切片 .xsx
             int shpSize = 50;
+            LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid - minXid) * (maxYid - minYid) / (shpSize * shpSize)));
             for (int i = minXid; i <= maxXid;)
             {
                 for (int j = minYid; j <= maxYid;)
@@ -1154,6 +1261,7 @@ namespace LTE.SeverImp
                     IbatisHelper.ExecuteInsert("insAreaShp", ht);
 
                     j = Math.Min(maxYid, j + shpSize);
+                    LoadInfo.loadHashAdd(1);
                 }
                 i = Math.Min(maxXid, i + shpSize);
             }
@@ -1253,6 +1361,7 @@ namespace LTE.SeverImp
         {
             //图层切片 .xsx
             int shpSize = 50;
+            LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid - minXid) * (maxYid - minYid) / (shpSize * shpSize)));
             for (int i = minXid; i <= maxXid;)
             {
                 for (int j = minYid; j <= maxYid;)
@@ -1277,6 +1386,7 @@ namespace LTE.SeverImp
                     IbatisHelper.ExecuteInsert("insAreaShp", ht);
 
                     j = Math.Min(maxYid, j + shpSize);
+                    LoadInfo.loadHashAdd(1);
                 }
                 i = Math.Min(maxXid, i + shpSize);
             }
@@ -1297,6 +1407,11 @@ namespace LTE.SeverImp
             if (!layer.constuctGrid3Ds())
                 return new Result(false, "无干扰源");
             return new Result(true,"网外干扰刷新成功");
+        }
+
+        public Result refreshSPLayer(string version)
+        {
+            throw new NotImplementedException();
         }
 
         public Result refreshTINLayer()
