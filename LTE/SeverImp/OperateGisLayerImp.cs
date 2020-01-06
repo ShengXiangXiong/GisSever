@@ -1409,11 +1409,6 @@ namespace LTE.SeverImp
             return new Result(true,"网外干扰刷新成功");
         }
 
-        public Result refreshSPLayer(string version)
-        {
-            throw new NotImplementedException();
-        }
-
         public Result refreshTINLayer()
         {
             string areaName = "南京";
