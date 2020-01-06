@@ -1135,28 +1135,28 @@ namespace LTE.SeverImp
             //图层切片 .xsx
             int shpSize = 50;
             LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid-minXid)*(maxYid-minYid)/(shpSize*shpSize)));
-            for (int i = minXid; i <= maxXid; )
+            for (int i = minXid; i < maxXid; )
             {
-                for (int j = minYid; j <= maxYid; )
+                for (int j = minYid; j < maxYid; )
                 {
                     string areaRange = String.Format("{0}_{1}_{2}_{3}", i, j, i + shpSize, j + shpSize);
                     string layerName = LayerNames.AreaCoverGrid3Ds + areaRange + ".shp";
                     OperateCoverGird3DLayer operateGrid = new OperateCoverGird3DLayer(layerName);
                     operateGrid.ClearLayer();
-                    if (!operateGrid.constuctAreaGrid3Ds(i, j, i + shpSize, j + shpSize))
-                        return new Result(false, "请先对区域内的小区进行覆盖计算");
-
-                    LTE.Geometric.Point MinP = GridHelper.getInstance().GridToLeftDownGeo(i, j);
-                    LTE.Geometric.Point MaxP = GridHelper.getInstance().GridToRightUpGeo(i+shpSize, j+shpSize);
-                    Hashtable ht = new Hashtable();
-                    ht["MinLongitude"] = MinP.X;
-                    ht["MinLatitude"] = MinP.Y;
-                    ht["MaxLongitude"] = MaxP.X;
-                    ht["MaxLatitude"] = MaxP.Y;
-                    ht["ShpName"] = layerName;
-                    ht["Type"] = "Area3DCover";
-                    ht["DateTime"] = DateTime.Now;
-                    IbatisHelper.ExecuteInsert("insAreaShp", ht);
+                    if(operateGrid.constuctAreaGrid3Ds(i, j, i + shpSize, j + shpSize, layerName))
+                    {
+                        LTE.Geometric.Point MinP = GridHelper.getInstance().GridToLeftDownGeo(i, j);
+                        LTE.Geometric.Point MaxP = GridHelper.getInstance().GridToRightUpGeo(i + shpSize, j + shpSize);
+                        Hashtable ht = new Hashtable();
+                        ht["MinLongitude"] = MinP.X;
+                        ht["MinLatitude"] = MinP.Y;
+                        ht["MaxLongitude"] = MaxP.X;
+                        ht["MaxLatitude"] = MaxP.Y;
+                        ht["ShpName"] = layerName;
+                        ht["Type"] = "Area3DCover";
+                        ht["DateTime"] = DateTime.Now;
+                        IbatisHelper.ExecuteInsert("insAreaShp", ht);
+                    }
 
                     j = Math.Min(maxYid, j + shpSize);
 
@@ -1210,55 +1210,58 @@ namespace LTE.SeverImp
 
         public Result refreshDefectLayer(int minXid, int minYid, int maxXid, int maxYid, DefectType type)
         {
+            string typeName = "";
+            switch (type)
+            {
+                case DefectType.Weak:
+                    typeName += LayerNames.Weak;
+                    break;
+                case DefectType.Excessive:
+                    typeName += LayerNames.Excessive;
+                    break;
+                case DefectType.Overlapped:
+                    typeName += LayerNames.Overlapped;
+                    break;
+                case DefectType.PCIconflict:
+                    typeName += LayerNames.PCIconflict;
+                    break;
+                case DefectType.PCIconfusion:
+                    typeName += LayerNames.PCIconfusion;
+                    break;
+                case DefectType.PCImod3:
+                    typeName += LayerNames.PCImod3;
+                    break;
+                default:
+                    break;
+            }
             //图层切片 .xsx
             int shpSize = 50;
             LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid - minXid) * (maxYid - minYid) / (shpSize * shpSize)));
-            for (int i = minXid; i <= maxXid;)
+            for (int i = minXid; i < maxXid;)
             {
-                for (int j = minYid; j <= maxYid;)
+                for (int j = minYid; j < maxYid;)
                 {
-                    string layerName = String.Format("{0}_{1}_{2}_{3}", i, j, i + shpSize, j + shpSize);
-                    switch (type)
-                    {
-                        case DefectType.Weak:
-                            layerName += LayerNames.Weak;
-                            break;
-                        case DefectType.Excessive:
-                            layerName += LayerNames.Excessive;
-                            break;
-                        case DefectType.Overlapped:
-                            layerName += LayerNames.Overlapped;
-                            break;
-                        case DefectType.PCIconflict:
-                            layerName += LayerNames.PCIconflict;
-                            break;
-                        case DefectType.PCIconfusion:
-                            layerName += LayerNames.PCIconfusion;
-                            break;
-                        case DefectType.PCImod3:
-                            layerName += LayerNames.PCImod3;
-                            break;
-                        default:
-                            break;
-                    }
+                    string layerName = typeName;
+                    layerName += String.Format("{0}_{1}_{2}_{3}", i, j, i + shpSize, j + shpSize);
                     layerName += ".shp";
 
                     OperateDefectLayer operateGrid3d = new OperateDefectLayer(layerName);
                     operateGrid3d.ClearLayer();
-                    if (!operateGrid3d.constuctGrid3Ds(i, j, i + shpSize, j + shpSize, (short)type))
-                        return new Result(false, "请先对区域进行网内干扰分析计算");
 
-                    LTE.Geometric.Point MinP = GridHelper.getInstance().GridToLeftDownGeo(i, j);
-                    LTE.Geometric.Point MaxP = GridHelper.getInstance().GridToRightUpGeo(i + shpSize, j + shpSize);
-                    Hashtable ht = new Hashtable();
-                    ht["MinLongitude"] = MinP.X;
-                    ht["MinLatitude"] = MinP.Y;
-                    ht["MaxLongitude"] = MaxP.X;
-                    ht["MaxLatitude"] = MaxP.Y;
-                    ht["ShpName"] = layerName;
-                    ht["Type"] = type;
-                    ht["DateTime"] = DateTime.Now;
-                    IbatisHelper.ExecuteInsert("insAreaShp", ht);
+                    if(operateGrid3d.constuctGrid3Ds(i, i + shpSize, j, j + shpSize, (short)type))
+                    {
+                        LTE.Geometric.Point MinP = GridHelper.getInstance().GridToLeftDownGeo(i, j);
+                        LTE.Geometric.Point MaxP = GridHelper.getInstance().GridToRightUpGeo(i + shpSize, j + shpSize);
+                        Hashtable ht = new Hashtable();
+                        ht["MinLongitude"] = MinP.X;
+                        ht["MinLatitude"] = MinP.Y;
+                        ht["MaxLongitude"] = MaxP.X;
+                        ht["MaxLatitude"] = MaxP.Y;
+                        ht["ShpName"] = layerName;
+                        ht["Type"] = type;
+                        ht["DateTime"] = DateTime.Now;
+                        IbatisHelper.ExecuteInsert("insAreaShp", ht);
+                    }
 
                     j = Math.Min(maxYid, j + shpSize);
                     LoadInfo.loadHashAdd(1);
@@ -1326,28 +1329,28 @@ namespace LTE.SeverImp
             //图层切片 .xsx
             int shpSize = 50;
             LoadInfo.loadCountAdd((int)Math.Ceiling((double)(maxXid - minXid) * (maxYid - minYid) / (shpSize * shpSize)));
-            for (int i = minXid; i <= maxXid;)
+            for (int i = minXid; i < maxXid;)
             {
-                for (int j = minYid; j <= maxYid;)
+                for (int j = minYid; j < maxYid;)
                 {
                     string areaRange = String.Format("{0}_{1}_{2}_{3}", i, j, i + shpSize, j + shpSize);
-                    string layerName = LayerNames.AreaCoverGrid3Ds + areaRange + ".shp";
+                    string layerName = LayerNames.AreaCoverGrids + areaRange + ".shp";
                     OperateCoverGirdLayer operateGrid = new OperateCoverGirdLayer(layerName);
                     operateGrid.ClearLayer();
-                    if (!operateGrid.constuctAreaGrids(i, j, i + shpSize, j + shpSize))
-                        return new Result(false, "请先对区域内的小区进行覆盖计算");
-
-                    LTE.Geometric.Point MinP = GridHelper.getInstance().GridToLeftDownGeo(i, j);
-                    LTE.Geometric.Point MaxP = GridHelper.getInstance().GridToRightUpGeo(i + shpSize, j + shpSize);
-                    Hashtable ht = new Hashtable();
-                    ht["MinLongitude"] = MinP.X;
-                    ht["MinLatitude"] = MinP.Y;
-                    ht["MaxLongitude"] = MaxP.X;
-                    ht["MaxLatitude"] = MaxP.Y;
-                    ht["ShpName"] = layerName;
-                    ht["Type"] = "AreaGroundCover";
-                    ht["DateTime"] = DateTime.Now;
-                    IbatisHelper.ExecuteInsert("insAreaShp", ht);
+                    if(operateGrid.constuctAreaGrids(i, j, i + shpSize, j + shpSize, layerName))
+                    {
+                        LTE.Geometric.Point MinP = GridHelper.getInstance().GridToLeftDownGeo(i, j);
+                        LTE.Geometric.Point MaxP = GridHelper.getInstance().GridToRightUpGeo(i + shpSize, j + shpSize);
+                        Hashtable ht = new Hashtable();
+                        ht["MinLongitude"] = MinP.X;
+                        ht["MinLatitude"] = MinP.Y;
+                        ht["MaxLongitude"] = MaxP.X;
+                        ht["MaxLatitude"] = MaxP.Y;
+                        ht["ShpName"] = layerName;
+                        ht["Type"] = "AreaGroundCover";
+                        ht["DateTime"] = DateTime.Now;
+                        IbatisHelper.ExecuteInsert("insAreaShp", ht);
+                    }
 
                     j = Math.Min(maxYid, j + shpSize);
                     LoadInfo.loadHashAdd(1);
@@ -1400,6 +1403,7 @@ namespace LTE.SeverImp
         {
             LoadInfo.UserId.Value = userId;
             LoadInfo.taskName.Value = taskName;
+            Console.WriteLine(userId + taskName);
             return new Result(true, "任务进度设置成功");
         }
     }

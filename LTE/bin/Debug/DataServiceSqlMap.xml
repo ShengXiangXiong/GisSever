@@ -148,18 +148,18 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocat
 		</select>
 		
 		<select id="GetSpecifiedAreaGrids" parameterClass="Hashtable">
-	
-			select a.GXID, a.GYID, b.Minx, b.Miny, b.Maxx, b.Maxy, 
-			a.ReceivedPowerdbm, 0 as PathLoss from 
-			tbGridDem b,
-			(select GXID, GYID, max(ReceivedPowerdbm) ReceivedPowerdbm 
-			from tbGridPathloss  where GXID between '$MinGXID$' and '$MaxGXID$' 
-			and GYID between '$MinGYID$' and '$MaxGYID$'  group by gxid, gyid
-			) as a(gxid, gyid, ReceivedPowerdbm)
-			where a.gxid = b.gxid and a.gyid = b.gyid 
-			and a.gxid = b.gxid and a.gyid = b.gyid
-			and a.ReceivedPowerdbm > -130
-		</select>
+
+      select a.GXID, a.GYID, b.Minx, b.Miny, b.Maxx, b.Maxy, a.level,
+      a.ReceivedPowerdbm, 0 as PathLoss from
+      tbGridDem b,
+      (select GXID, GYID, max(ReceivedPowerdbm) ReceivedPowerdbm,Level
+      from tbGridPathloss  where GXID between '$MinGXID$' and '$MaxGXID$'
+      and GYID between '$MinGYID$' and '$MaxGYID$'  group by gxid, gyid,Level
+      ) as a(gxid, gyid, ReceivedPowerdbm,Level)
+      where a.gxid = b.gxid and a.gyid = b.gyid
+      and a.gxid = b.gxid and a.gyid = b.gyid
+      and a.ReceivedPowerdbm > -130
+    </select>
 
 		<select id="GetSpecifiedAreaGrid3Ds" parameterClass="Hashtable">
 			select a.GXID, a.GYID, a.[Level], b.MinX, b.MinY, b.MaxX, b.MaxY, a.ReceivedPowerdbm, 0 as PathLoss

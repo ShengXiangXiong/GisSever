@@ -38,11 +38,15 @@ namespace LTE.GIS
             //若不存在shp文件，则创建
             if (!DefineLayer.findLayer(path, name))
             {
-                new CreateLayer(path, name).CreateCoverLayer();
+                new CreateLayer(path, name).CreateDefectLayer();
             }
 
-            IFeatureClass fclass = featureWorkspace.OpenFeatureClass(name);
-            IFeatureLayer flayer = new FeatureLayer();
+            //IFeatureClass pFeatureClass = featureWorkspace.OpenFeatureClass(name);
+            //IFeatureLayer flayer = new FeatureLayer();
+            //pFeatureLayer.FeatureClass = pFeatureClass;
+
+            pFeatureClass = featureWorkspace.OpenFeatureClass(name);
+            pFeatureLayer = new FeatureLayer();
             pFeatureLayer.FeatureClass = pFeatureClass;
 
             //pFeatureLayer = GISMapApplication.Instance.GetLayer(name) as IFeatureLayer;
@@ -93,8 +97,13 @@ namespace LTE.GIS
             double gbaseheight = GridHelper.getInstance().getGBaseHeight();
             double gheight = GridHelper.getInstance().getGHeight();
             //循环添加
+            int cnt = 0;
             foreach (DataRow dataRow in gridTable.Rows)
             {
+                if (++cnt % 100 == 0)
+                {
+                    Console.WriteLine(cnt+"/"+ gridTable.Rows.Count);
+                }
                 gxid = int.Parse(dataRow["GXID"].ToString());
                 gyid = int.Parse(dataRow["GYID"].ToString());
                 level = int.Parse(dataRow["GZID"].ToString());
@@ -136,8 +145,12 @@ namespace LTE.GIS
             workspaceEdit.StopEditOperation();
             workspaceEdit.StopEditing(true);
 
-            IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
-            pFeatureClassManage.UpdateExtent();
+            //IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
+            //pFeatureClassManage.UpdateExtent();
+
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(dataset);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(workspace);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureCursor);
 
             //GISMapApplication.Instance.RefreshLayer(pFeatureLayer);
             return true;

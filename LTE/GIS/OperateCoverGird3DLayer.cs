@@ -358,7 +358,7 @@ namespace LTE.GIS
         /// <param name="mingyid"></param>
         /// <param name="maxgxid"></param>
         /// <param name="maxgyid"></param>
-        public bool constuctAreaGrid3Ds(int mingxid, int mingyid, int maxgxid, int maxgyid)
+        public bool constuctAreaGrid3Ds(int mingxid, int mingyid, int maxgxid, int maxgyid,string layerName)
         {
             DataTable gridTable = new DataTable();
             Hashtable ht = new Hashtable();
@@ -371,12 +371,12 @@ namespace LTE.GIS
                 return false;
 
             IFeatureWorkspace featureWorkspace = MapWorkSpace.getWorkSpace();
-            IFeatureClass fclass = featureWorkspace.OpenFeatureClass(LayerNames.AreaCoverGrid3Ds);
-            IFeatureLayer flayer = new FeatureLayer();
+            IFeatureClass fclass = featureWorkspace.OpenFeatureClass(layerName);
+            //IFeatureLayer flayer = new FeatureLayer();
             pFeatureLayer.FeatureClass = pFeatureClass;
 
             //IFeatureLayer flayer = GISMapApplication.Instance.GetLayer(LayerNames.AreaCoverGrid3Ds) as IFeatureLayer;
-            FeatureUtilities.DeleteFeatureLayerFeatrues(flayer);
+            //FeatureUtilities.DeleteFeatureLayerFeatrues(flayer);
 
             //IFeatureClass fclass = flayer.FeatureClass;
 
@@ -396,9 +396,16 @@ namespace LTE.GIS
             double recePower, pathLoss;
             double gbaseheight = GridHelper.getInstance().getGBaseHeight();
             double gheight = GridHelper.getInstance().getGHeight();
+
             //循环添加
+            int cnt = 0;
+
             foreach (DataRow dataRow in gridTable.Rows)
             {
+                if (cnt++ % 1000 == 0)
+                {
+                    Console.WriteLine("已计算  " + cnt + "/" + gridTable.Rows.Count);
+                }
                 gxid = int.Parse(dataRow["GXID"].ToString());
                 gyid = int.Parse(dataRow["GYID"].ToString());
                 level = int.Parse(dataRow["Level"].ToString());
@@ -455,6 +462,11 @@ namespace LTE.GIS
 
             IFeatureClassManage pFeatureClassManage = (IFeatureClassManage)pFeatureClass;
             pFeatureClassManage.UpdateExtent();
+
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureClassManage);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(dataset);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(workspace);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(pFeatureCursor);
 
             //GISMapApplication.Instance.RefreshLayer(pFeatureLayer);
             return true;
