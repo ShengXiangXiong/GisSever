@@ -686,6 +686,29 @@ namespace LTE.InternalInterference.Grid
             }
             return ret;
         }
+
+        /// <summary>
+        /// 根据xy坐标得到其所在栅格的最大最小坐标
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="minx"></param>
+        /// <param name="miny"></param>
+        /// <param name="maxx"></param>
+        /// <param name="maxy"></param>
+        public bool XYGetGridXY(double x, double y, ref double minx, ref double miny, ref double maxx, ref double maxy)
+        {
+            int gx = 0, gy = 0;
+            if (XYToGGrid1(x, y, ref gx, ref gy))
+            {
+                minx = oX + gx * ggridsize;
+                miny = oY + gy * ggridsize;
+                maxx = oX + (gx + 1) * ggridsize;
+                maxy = oY + (gy + 1) * ggridsize;
+                return true;
+            }
+            return false;
+        }
     }
 
     /// <summary>

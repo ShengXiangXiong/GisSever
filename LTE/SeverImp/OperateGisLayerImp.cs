@@ -1303,11 +1303,47 @@ namespace LTE.SeverImp
 
         public Result refreshDTLayer(string bts, int dis, double minx, double miny, double maxx, double maxy)
         {
-            OperateDTLayer layer = new OperateDTLayer();
-            layer.ClearLayer();
-            if (!layer.constuctDTGrids())
-                return new Result(false, "路测数据不存在");
-            return new Result(true, "路测图层刷新成功");
+            try
+            {
+
+                OperateDTLayer dtlayer = new OperateDTLayer("TD路测.shp");
+                
+                dtlayer.ClearLayer();
+                if (dtlayer.constuctDTGrids(bts, dis, minx, miny, maxx, maxy))
+                {
+                    return new Result { Ok = true, Msg = "DT图层刷新成功", ShpName = "TD路测" };
+                }
+                else
+                {
+                    return new Result(false, "无数据");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Result(false, string.Format("出现异常：{0}", ex.ToString()));
+            }
+        }
+
+        public Result refreshSPLayer(string version)
+        {
+            try
+            {
+                OperateSelectPointsLayer dtlayer = new OperateSelectPointsLayer("反向跟踪点集.shp");
+
+                dtlayer.ClearLayer();
+                if (dtlayer.ConstuctSelectPoints(version))
+                {
+                    return new Result { Ok = true, Msg = "反向跟踪点集", ShpName = "反向跟踪点集" };
+                }
+                else
+                {
+                    return new Result(false, "无数据");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Result(false, string.Format("出现异常：{0}", ex.ToString()));
+            }
         }
 
         public Result refreshGroundCover(string cellName)
@@ -1374,11 +1410,6 @@ namespace LTE.SeverImp
             if (!layer.constuctGrid3Ds())
                 return new Result(false, "无干扰源");
             return new Result(true,"网外干扰刷新成功");
-        }
-
-        public Result refreshSPLayer(string version)
-        {
-            throw new NotImplementedException();
         }
 
         public Result refreshTINLayer()
